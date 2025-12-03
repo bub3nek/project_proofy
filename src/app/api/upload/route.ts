@@ -20,14 +20,10 @@ export async function POST(request: Request) {
         }
 
         const blobPath = `${folder}/${Date.now()}-${filename}`;
-        const options: {
-            access?: 'public';
-            token?: string;
-        } = {};
-
-        if (!isPrivate) {
-            options.access = 'public';
-        }
+        type PutOptions = NonNullable<Parameters<typeof put>[2]> & { access: 'public' | 'private' };
+        const options: PutOptions = {
+            access: isPrivate ? 'private' : 'public',
+        };
 
         if (process.env.BLOB_READ_WRITE_TOKEN) {
             options.token = process.env.BLOB_READ_WRITE_TOKEN;
