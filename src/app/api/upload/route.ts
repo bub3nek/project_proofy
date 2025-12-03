@@ -7,7 +7,8 @@ export async function POST(request: Request) {
     try {
         const formData = await request.formData();
         const file = formData.get('file');
-        const access = (formData.get('access') || 'public') as 'public' | 'private';
+        const accessField = (formData.get('access') || 'public').toString();
+        const isPrivate = accessField === 'private';
         const folder = (formData.get('folder') as string) || 'proofy';
         const filename = (formData.get('filename') as string) || (file as File)?.name || 'upload';
 
@@ -20,11 +21,13 @@ export async function POST(request: Request) {
 
         const blobPath = `${folder}/${Date.now()}-${filename}`;
         const options: {
-            access: 'public' | 'private';
+            access?: 'public';
             token?: string;
-        } = {
-            access,
-        };
+        } = {};
+
+        if (!isPrivate) {
+            options.access = 'public';
+        }
 
         if (process.env.BLOB_READ_WRITE_TOKEN) {
             options.token = process.env.BLOB_READ_WRITE_TOKEN;
