@@ -10,6 +10,7 @@ import { ImageMetadata, ApiResponse } from '@/types';
 import { getWeekNumber } from '@/lib/utils';
 import { UploadZone } from './UploadZone';
 import { MetadataForm } from './MetadataForm';
+import { previewSmartTags } from '@/lib/image-intelligence';
 
 interface UploadManagerProps {
     onImagesCreated?: (images: ImageMetadata[]) => void;
@@ -260,6 +261,12 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
                 <div className="space-y-4">
                     {queue.map((item) => {
                         const week = item.date ? getWeekNumber(item.date) : null;
+                        const suggested = previewSmartTags({
+                            store: item.store,
+                            date: item.date,
+                            notes: item.notes,
+                            tags: parseTags(item.tags),
+                        }).slice(0, 4);
                         return (
                             <motion.div
                                 key={item.id}
@@ -282,14 +289,28 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
                                         )}
                                     </div>
 
-                                    <MetadataForm
-                                        store={item.store}
-                                        date={item.date}
-                                        tags={item.tags}
-                                        notes={item.notes}
-                                        week={week}
-                                        onChange={(updates) => updateMetadataFields(item.id, updates)}
-                                    />
+                                    <div className="space-y-4">
+                                        <MetadataForm
+                                            store={item.store}
+                                            date={item.date}
+                                            tags={item.tags}
+                                            notes={item.notes}
+                                            week={week}
+                                            onChange={(updates) => updateMetadataFields(item.id, updates)}
+                                        />
+                                        {suggested.length > 0 && (
+                                            <div className="text-xs text-[var(--text-muted)] space-y-2">
+                                                <p className="font-['Press_Start_2P'] text-[10px] tracking-widest">AUTO TAGS</p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {suggested.map((tag) => (
+                                                        <span key={tag} className="pixel-btn pixel-btn-cyan text-[10px]">
+                                                            #{tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
 
                                     <div className="flex flex-col gap-3">
                                         <div className="px-3 py-2 border border-[var(--border-color)] font-['VT323'] text-sm">

@@ -19,10 +19,16 @@ async function deleteBlob(path?: string | null) {
     }
 }
 
+async function resolveParams(context: { params: { id: string } } | { params: Promise<{ id: string }> }) {
+    const params = 'then' in context.params ? await context.params : context.params;
+    return params;
+}
+
 export async function GET(
     _request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: { id: string } } | { params: Promise<{ id: string }> }
 ) {
+    const params = await resolveParams(context);
     const image = await getImageById(params.id);
     if (!image) {
         return NextResponse.json<ApiResponse<null>>(
@@ -39,10 +45,11 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: { id: string } } | { params: Promise<{ id: string }> }
 ) {
     try {
         const payload = (await request.json()) as UpdateImagePayload;
+        const params = await resolveParams(context);
         const updated = await updateImage(params.id, payload);
         return NextResponse.json<ApiResponse<ImageMetadata>>({
             success: true,
@@ -59,9 +66,10 @@ export async function PUT(
 
 export async function DELETE(
     _request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: { id: string } } | { params: Promise<{ id: string }> }
 ) {
     try {
+        const params = await resolveParams(context);
         const removed = await deleteImage(params.id);
         await deleteBlob(removed.blobPath);
 

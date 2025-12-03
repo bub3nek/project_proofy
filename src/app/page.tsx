@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import {
   ArrowRight,
   Camera,
@@ -58,18 +59,28 @@ export default function Home() {
     <main className="min-h-screen px-4 py-16 md:px-8 site-grid pixel-hero">
       <div className="max-w-6xl mx-auto space-y-16">
         <section className="grid gap-10 md:grid-cols-2 items-center">
-          <div className="space-y-6">
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
             <span className="pixel-chip">
               <Sparkles size={14} />
               PROJECT PROOFY v4.2
             </span>
             <div>
-              <h1 className="text-4xl md:text-5xl pixel-heading text-glow-cyan leading-relaxed">
+              <motion.h1
+                className="text-4xl md:text-5xl pixel-heading text-glow-cyan leading-relaxed"
+                initial={{ scale: 0.95 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.6 }}
+              >
                 Retro Pixel
                 <span className="text-glow-magenta block mt-2">
                   Cyberpunk Photo Ops
                 </span>
-              </h1>
+              </motion.h1>
               <p className="mt-6 text-lg text-[var(--text-secondary)] leading-relaxed">
                 A cloud-native gallery for visual proofing. Upload from the admin flightdeck,
                 enrich with metadata, and let the neon interface guide teams through every
@@ -82,29 +93,34 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="pixel-card glow-cyan py-6">
+              <motion.div className="pixel-card glow-cyan py-6" whileHover={{ scale: 1.02 }}>
                 <p className="text-3xl font-['Press_Start_2P']">500+</p>
                 <p className="text-xs tracking-[0.2em]">IMAGES</p>
-              </div>
-              <div className="pixel-card glow-magenta py-6">
+              </motion.div>
+              <motion.div className="pixel-card glow-magenta py-6" whileHover={{ scale: 1.02 }}>
                 <p className="text-3xl font-['Press_Start_2P']">12</p>
                 <p className="text-xs tracking-[0.2em]">STORES</p>
-              </div>
+              </motion.div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/gallery" className="pixel-btn pixel-btn-cyan flex items-center justify-center gap-3 text-sm">
+              <Link href="/gallery" className="pixel-btn pixel-btn-cyan flex items-center justify-center gap-3 text-sm hover:scale-105 transition">
                 BROWSE GALLERY
                 <ArrowRight size={16} />
               </Link>
-              <Link href="/admin" className="pixel-btn pixel-btn-magenta flex items-center justify-center gap-3 text-sm">
+              <Link href="/admin" className="pixel-btn pixel-btn-magenta flex items-center justify-center gap-3 text-sm hover:scale-105 transition">
                 ADMIN ACCESS
                 <ShieldCheck size={16} />
               </Link>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="space-y-6">
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
             <div className="pixel-ascii">
               {asciiArt.map((line) => (
                 <div key={line}>{line}</div>
@@ -125,20 +141,30 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         <section className="grid gap-6 md:grid-cols-3">
           {featureCards.map(({ title, description, icon: Icon, accent }) => (
-            <div key={title} className={`pixel-card ${accent} p-6 space-y-4`}>
+            <motion.div
+              key={title}
+              className={`pixel-card ${accent} p-6 space-y-4`}
+              whileHover={{ y: -6, rotate: -1 }}
+              transition={{ type: 'spring', stiffness: 200 }}
+            >
               <Icon size={32} className="text-[var(--neon-cyan)]" />
               <h3 className="text-lg font-['Press_Start_2P']">{title}</h3>
               <p className="text-[var(--text-secondary)] text-base leading-relaxed">{description}</p>
-            </div>
+            </motion.div>
           ))}
         </section>
 
-        <section className="pixel-card glow-green p-8 space-y-6">
+        <motion.section
+          className="pixel-card glow-green p-8 space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <p className="text-[var(--text-muted)] font-['VT323'] text-xl">
@@ -157,7 +183,7 @@ export default function Home() {
               <Workflow size={16} />
             </Link>
           </div>
-        </section>
+        </motion.section>
       </div>
     </main>
   );

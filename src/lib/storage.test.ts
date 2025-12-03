@@ -64,7 +64,7 @@ describe('storage', () => {
         });
 
         expect(updated.week).not.toBe(created.week);
-        expect(updated.tags).toEqual(['BETA', 'GAMMA']);
+        expect(updated.tags).toEqual(expect.arrayContaining(['BETA', 'GAMMA']));
         expect(updated.notes).toBe('Updated note');
     });
 

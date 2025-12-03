@@ -10,6 +10,7 @@ import { FilterOptions, ImageMetadata } from "@/types";
 import { Filter as FilterIcon, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { filterImages, getFilterCollections } from "@/lib/filter-images";
+import { AutoFilterBar } from "@/components/Gallery/AutoFilterBar";
 
 export default function GalleryPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -36,6 +37,26 @@ export default function GalleryPage() {
     }, []);
 
     const { stores, tags } = useMemo(() => getFilterCollections(images), [images]);
+
+    const quickFilters = useMemo(() => {
+        const storeCounts = new Map<string, number>();
+        const tagCounts = new Map<string, number>();
+        images.forEach((img) => {
+            storeCounts.set(img.store, (storeCounts.get(img.store) || 0) + 1);
+            img.tags.forEach((tag) => {
+                tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+            });
+        });
+        const topStores = Array.from(storeCounts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([store]) => store);
+        const topTags = Array.from(tagCounts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 4)
+            .map(([tag]) => tag);
+        return { topStores, topTags };
+    }, [images]);
 
     const filteredImages = useMemo(() => {
         return filterImages(images, deferredFilters);
@@ -89,6 +110,13 @@ export default function GalleryPage() {
                             SHOWING {filteredImages.length} RECORDS
                         </p>
                     </div>
+                    <AutoFilterBar
+                        stores={quickFilters.topStores}
+                        tags={quickFilters.topTags}
+                        onStoreSelect={(store) => setFilters((prev) => ({ ...prev, stores: [store] }))}
+                        onTagSelect={(tag) => setFilters((prev) => ({ ...prev, tags: [tag] }))}
+                        onReset={() => setFilters({})}
+                    />
 
                     <ImageGrid
                         images={filteredImages}
