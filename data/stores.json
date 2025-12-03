@@ -1,0 +1,22 @@
+[
+    {
+        "id": "store-1",
+        "name": "NEON DREAMS",
+        "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+        "id": "store-2",
+        "name": "CYBER MART",
+        "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+        "id": "store-3",
+        "name": "TECH HAVEN",
+        "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+        "id": "store-4",
+        "name": "DATA CORE",
+        "createdAt": "2025-01-01T00:00:00.000Z"
+    }
+]

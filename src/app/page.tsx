@@ -1,65 +1,164 @@
-import Image from "next/image";
+import Link from 'next/link';
+import {
+  ArrowRight,
+  Camera,
+  Sparkles,
+  ShieldCheck,
+  LayoutGrid,
+  Workflow,
+} from 'lucide-react';
+
+const featureCards = [
+  {
+    title: 'Neon Evidence Hub',
+    description: 'Cloud-synced gallery with realtime updates and zero-loss optimization.',
+    icon: Camera,
+    accent: 'glow-cyan',
+  },
+  {
+    title: 'Adaptive Filters',
+    description: 'Layer store, date, ISO-week, and tag logic to surface proof instantly.',
+    icon: LayoutGrid,
+    accent: 'glow-magenta',
+  },
+  {
+    title: 'Admin Flightdeck',
+    description: 'Protected dashboard with drag & drop uploads, metadata, and bulk actions.',
+    icon: ShieldCheck,
+    accent: 'glow-purple',
+  },
+];
+
+const timeline = [
+  {
+    label: 'Phase 4',
+    title: 'Admin & Auth',
+    detail: 'NextAuth-powered access gates every control room in the stack.',
+  },
+  {
+    label: 'Phase 5',
+    title: 'Image Intelligence',
+    detail: 'Vercel Blob uploads + JSON metadata keep assets versioned and fast.',
+  },
+  {
+    label: 'Phase 6',
+    title: 'Polish & Motion',
+    detail: 'Filter stress-tests, animations, and final walkthrough documentation.',
+  },
+] as const;
+
+const asciiArt = [
+  ' /\\__/\\    PROOF KEEPER',
+  '(  0.0 )   STATUS: ONLINE',
+  ' > ^  <    LOGGING: TRUE',
+] as const;
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="min-h-screen px-4 py-16 md:px-8 site-grid pixel-hero">
+      <div className="max-w-6xl mx-auto space-y-16">
+        <section className="grid gap-10 md:grid-cols-2 items-center">
+          <div className="space-y-6">
+            <span className="pixel-chip">
+              <Sparkles size={14} />
+              PROJECT PROOFY v4.2
+            </span>
+            <div>
+              <h1 className="text-4xl md:text-5xl pixel-heading text-glow-cyan leading-relaxed">
+                Retro Pixel
+                <span className="text-glow-magenta block mt-2">
+                  Cyberpunk Photo Ops
+                </span>
+              </h1>
+              <p className="mt-6 text-lg text-[var(--text-secondary)] leading-relaxed">
+                A cloud-native gallery for visual proofing. Upload from the admin flightdeck,
+                enrich with metadata, and let the neon interface guide teams through every
+                store, date, and week.
+              </p>
+              <div className="pixel-divider" />
+              <p className="text-sm uppercase tracking-[0.4em] text-[var(--text-muted)]">
+                PIXEL ENGINE // ALWAYS RECORDING
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div className="pixel-card glow-cyan py-6">
+                <p className="text-3xl font-['Press_Start_2P']">500+</p>
+                <p className="text-xs tracking-[0.2em]">IMAGES</p>
+              </div>
+              <div className="pixel-card glow-magenta py-6">
+                <p className="text-3xl font-['Press_Start_2P']">12</p>
+                <p className="text-xs tracking-[0.2em]">STORES</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/gallery" className="pixel-btn pixel-btn-cyan flex items-center justify-center gap-3 text-sm">
+                BROWSE GALLERY
+                <ArrowRight size={16} />
+              </Link>
+              <Link href="/admin" className="pixel-btn pixel-btn-magenta flex items-center justify-center gap-3 text-sm">
+                ADMIN ACCESS
+                <ShieldCheck size={16} />
+              </Link>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="pixel-ascii">
+              {asciiArt.map((line) => (
+                <div key={line}>{line}</div>
+              ))}
+            </div>
+            <div className="section-card space-y-6">
+              <div className="flex items-center justify-between">
+                <p className="text-[var(--text-muted)] font-['VT323'] text-lg">LIVE STATUS</p>
+                <span className="text-[var(--neon-green)] font-['Press_Start_2P'] text-xs">ONLINE</span>
+              </div>
+              <div className="timeline-line">
+                {timeline.map((step) => (
+                  <div key={step.label} className="timeline-step">
+                    <p className="text-[var(--neon-magenta)] font-['Press_Start_2P'] text-xs">{step.label}</p>
+                    <h3 className="text-xl mt-1 text-glow-magenta">{step.title}</h3>
+                    <p className="text-[var(--text-secondary)] text-base mt-2">{step.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="grid gap-6 md:grid-cols-3">
+          {featureCards.map(({ title, description, icon: Icon, accent }) => (
+            <div key={title} className={`pixel-card ${accent} p-6 space-y-4`}>
+              <Icon size={32} className="text-[var(--neon-cyan)]" />
+              <h3 className="text-lg font-['Press_Start_2P']">{title}</h3>
+              <p className="text-[var(--text-secondary)] text-base leading-relaxed">{description}</p>
+            </div>
+          ))}
+        </section>
+
+        <section className="pixel-card glow-green p-8 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <p className="text-[var(--text-muted)] font-['VT323'] text-xl">
+                SYNCHRONIZE YOUR EVIDENCE
+              </p>
+              <h2 className="text-3xl text-glow-green font-['Press_Start_2P'] leading-relaxed mt-3">
+                Launch the Neon Workflow
+              </h2>
+              <p className="text-[var(--text-secondary)] mt-4">
+                Upload proof, tag it, and watch the system calculate ISO weeks, tag overlays,
+                and store indexes automatically. Proofy keeps teams aligned.
+              </p>
+            </div>
+            <Link href="/gallery" className="pixel-btn pixel-btn-green flex items-center justify-center gap-3 text-sm">
+              ENTER ARCHIVE
+              <Workflow size={16} />
+            </Link>
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }

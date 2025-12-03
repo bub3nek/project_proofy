@@ -1,0 +1,70 @@
+[
+    {
+        "id": "1",
+        "url": "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?q=80&w=1000&auto=format&fit=crop",
+        "store": "NEON DREAMS",
+        "date": "2025-12-01",
+        "week": 49,
+        "tags": [
+            "DISPLAY",
+            "WINDOW",
+            "NIGHT"
+        ],
+        "notes": "Main window display setup for the holiday season. Featuring new cyberpunk collection.",
+        "uploadedAt": "2025-12-01T10:00:00Z"
+    },
+    {
+        "id": "2",
+        "url": "https://images.unsplash.com/photo-1555685812-4b943f3e99a6?q=80&w=1000&auto=format&fit=crop",
+        "store": "CYBER MART",
+        "date": "2025-12-02",
+        "week": 49,
+        "tags": [
+            "AISLE",
+            "STOCK",
+            "CLEAN"
+        ],
+        "notes": "Aisle 4 restocking complete. All shelves aligned and facing forward.",
+        "uploadedAt": "2025-12-02T14:30:00Z"
+    },
+    {
+        "id": "3",
+        "url": "https://images.unsplash.com/photo-1601042879364-f3947d3f9c16?q=80&w=1000&auto=format&fit=crop",
+        "store": "TECH HAVEN",
+        "date": "2025-11-28",
+        "week": 48,
+        "tags": [
+            "PROMO",
+            "SALE",
+            "SIGNAGE"
+        ],
+        "notes": "Black Friday promotional signage installation. High visibility achieved.",
+        "uploadedAt": "2025-11-28T09:15:00Z"
+    },
+    {
+        "id": "4",
+        "url": "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=1000&auto=format&fit=crop",
+        "store": "NEON DREAMS",
+        "date": "2025-11-25",
+        "week": 48,
+        "tags": [
+            "ENTRANCE",
+            "LIGHTING"
+        ],
+        "notes": "Entrance lighting check. Replaced flickering neon tube.",
+        "uploadedAt": "2025-11-25T16:45:00Z"
+    },
+    {
+        "id": "5",
+        "url": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1000&auto=format&fit=crop",
+        "store": "DATA CORE",
+        "date": "2025-12-03",
+        "week": 49,
+        "tags": [
+            "SERVER",
+            "MAINTENANCE"
+        ],
+        "notes": "Server room cable management update. Improved airflow.",
+        "uploadedAt": "2025-12-03T11:20:00Z"
+    }
+]
