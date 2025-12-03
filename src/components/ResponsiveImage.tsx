@@ -38,6 +38,7 @@ export function ResponsiveImage({
 }: ResponsiveImageProps) {
   const placeholder = metadata.placeholder || fallbackPlaceholder(metadata.id);
 
+  const loadingMode: 'eager' | 'lazy' = priority ? 'eager' : 'lazy';
   const baseProps = {
     alt: alt || metadata.notes || "Gallery image",
     src: metadata.url,
@@ -45,7 +46,7 @@ export function ResponsiveImage({
     sizes,
     placeholder: "blur" as const,
     blurDataURL: placeholder,
-    loading: priority ? "eager" : "lazy",
+    loading: loadingMode,
     quality,
   };
 

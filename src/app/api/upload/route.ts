@@ -20,10 +20,15 @@ export async function POST(request: Request) {
         }
 
         const blobPath = `${folder}/${Date.now()}-${filename}`;
-        type PutOptions = NonNullable<Parameters<typeof put>[2]> & { access: 'public' | 'private' };
-        const options: PutOptions = {
-            access: isPrivate ? 'private' : 'public',
-        };
+        if (isPrivate) {
+            return NextResponse.json<ApiResponse<null>>(
+                { success: false, error: 'Private access is not supported in this deployment.' },
+                { status: 400 }
+            );
+        }
+
+        type PutOptions = NonNullable<Parameters<typeof put>[2]>;
+        const options: PutOptions = { access: 'public' };
 
         if (process.env.BLOB_READ_WRITE_TOKEN) {
             options.token = process.env.BLOB_READ_WRITE_TOKEN;

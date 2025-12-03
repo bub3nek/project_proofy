@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Shield, ArrowLeft } from 'lucide-react';
 
@@ -11,13 +11,10 @@ import { Button } from '@/components/ui/Button';
 
 export default function AdminLoginPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    const authError = searchParams.get('error');
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
@@ -90,9 +87,9 @@ export default function AdminLoginPage() {
                             />
                         </div>
 
-                        {(error || authError) && (
+                        {error && (
                             <p className="text-[var(--neon-pink)] font-['VT323'] text-lg">
-                                {error || 'Authentication failed. Please check your credentials.'}
+                                {error}
                             </p>
                         )}
 
