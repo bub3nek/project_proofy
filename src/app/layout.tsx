@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { Preloader } from "@/components/Preloader";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Project Proofy • by Dmytro Usoltsev",
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body className="antialiased" suppressHydrationWarning>
         <Preloader />
         <Providers>{children}</Providers>
+        <SpeedInsights />
       </body>
     </html>
   );
