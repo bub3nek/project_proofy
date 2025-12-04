@@ -71,6 +71,7 @@ export async function POST(request: Request) {
                 token: blobToken,
                 contentType: mime,
                 addRandomSuffix: false,
+                allowOverwrite: true,
             });
         }
 
