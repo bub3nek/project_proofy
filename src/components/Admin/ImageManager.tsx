@@ -25,6 +25,13 @@ function parseTags(value: string) {
         .filter(Boolean);
 }
 
+function formatBytes(bytes?: number) {
+    if (!bytes || bytes <= 0) return '—';
+    const units = ['B', 'KB', 'MB', 'GB'];
+    const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+    return `${(bytes / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+}
+
 export function ImageManager({ images, isLoading, onImageDeleted, onImageUpdated }: ImageManagerProps) {
     const [search, setSearch] = useState('');
     const [editing, setEditing] = useState<ImageMetadata | null>(null);
@@ -147,6 +154,7 @@ export function ImageManager({ images, isLoading, onImageDeleted, onImageUpdated
                             <th className="py-3 border-b border-[var(--border-color)]">Preview</th>
                             <th className="py-3 border-b border-[var(--border-color)]">Store</th>
                             <th className="py-3 border-b border-[var(--border-color)]">Date / Week</th>
+                            <th className="py-3 border-b border-[var(--border-color)]">File Size</th>
                             <th className="py-3 border-b border-[var(--border-color)]">Tags</th>
                             <th className="py-3 border-b border-[var(--border-color)]">Notes</th>
                             <th className="py-3 border-b border-[var(--border-color)]">Actions</th>
@@ -155,7 +163,7 @@ export function ImageManager({ images, isLoading, onImageDeleted, onImageUpdated
                     <tbody>
                         {isLoading && (
                             <tr>
-                                <td colSpan={6} className="py-6 text-center text-[var(--text-muted)]">
+                                <td colSpan={7} className="py-6 text-center text-[var(--text-muted)]">
                                     Loading inventory...
                                 </td>
                             </tr>
@@ -163,7 +171,7 @@ export function ImageManager({ images, isLoading, onImageDeleted, onImageUpdated
 
                         {!isLoading && filteredImages.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="py-6 text-center text-[var(--text-muted)]">
+                                <td colSpan={7} className="py-6 text-center text-[var(--text-muted)]">
                                     No images match the current filters.
                                 </td>
                             </tr>
@@ -187,6 +195,7 @@ export function ImageManager({ images, isLoading, onImageDeleted, onImageUpdated
                                     <br />
                                     <span className="text-[var(--text-muted)]">Week {image.week}</span>
                                 </td>
+                                <td className="py-4 text-sm font-['VT323'] text-base">{formatBytes(image.bytes)}</td>
                                 <td className="py-4 text-sm font-['VT323']">{image.tags.join(', ') || '—'}</td>
                                 <td className="py-4 text-sm text-[var(--text-secondary)] max-w-sm">{image.notes || '—'}</td>
                                 <td className="py-4">

@@ -164,7 +164,8 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
             body: formData,
         });
 
-        const uploadJson = (await uploadResponse.json()) as ApiResponse<{
+        const uploadText = await uploadResponse.text();
+        let uploadJson: ApiResponse<{
             url: string;
             pathname: string;
             width?: number;
@@ -172,6 +173,23 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
             bytes?: number;
             mimeType?: string;
         }>;
+
+        try {
+            uploadJson = JSON.parse(uploadText) as ApiResponse<{
+                url: string;
+                pathname: string;
+                width?: number;
+                height?: number;
+                bytes?: number;
+                mimeType?: string;
+            }>;
+        } catch (parseError) {
+            throw new Error(
+                `Upload failed: ${
+                    uploadResponse.statusText || (parseError as Error).message || 'Unexpected response.'
+                }`
+            );
+        }
 
         if (!uploadResponse.ok || !uploadJson.success || !uploadJson.data) {
             throw new Error(uploadJson.error || 'Upload failed');
