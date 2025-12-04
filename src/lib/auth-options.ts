@@ -20,6 +20,7 @@ export function validateAdminCredentials(email: string, password: string) {
 
 export const authOptions: NextAuthOptions = {
     secret: resolvedSecret,
+    debug: true, // Enable NextAuth debugging
     session: {
         strategy: 'jwt',
     },
@@ -34,16 +35,21 @@ export const authOptions: NextAuthOptions = {
                 password: { label: 'Password', type: 'password' },
             },
             async authorize(credentials) {
+                console.log('[Auth] Authorizing request for:', credentials?.email);
+
                 if (!credentials?.email || !credentials?.password) {
+                    console.log('[Auth] Missing credentials');
                     return null;
                 }
 
                 const isValid = validateAdminCredentials(credentials.email, credentials.password);
 
                 if (!isValid) {
+                    console.log('[Auth] Invalid credentials');
                     return null;
                 }
 
+                console.log('[Auth] Credentials valid, logging in as admin');
                 return {
                     id: 'admin',
                     name: 'Admin',
@@ -69,3 +75,10 @@ export const authOptions: NextAuthOptions = {
         },
     },
 };
+
+console.log('[Auth] Configured with:', {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    VERCEL_URL: process.env.VERCEL_URL,
+    HAS_SECRET: !!process.env.NEXTAUTH_SECRET,
+    ADMIN_EMAIL_SET: !!process.env.ADMIN_EMAIL,
+});
