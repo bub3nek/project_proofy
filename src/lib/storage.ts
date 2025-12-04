@@ -154,7 +154,7 @@ function createPostgresAdapter(): StorageAdapter {
                 store TEXT NOT NULL,
                 date TEXT NOT NULL,
                 week INTEGER NOT NULL,
-                tags TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
+                tags JSONB NOT NULL DEFAULT '[]'::jsonb,
                 notes TEXT NOT NULL DEFAULT '',
                 uploaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                 sort_key BIGINT
@@ -164,6 +164,21 @@ function createPostgresAdapter(): StorageAdapter {
     }
 
     function mapRow(row: Record<string, unknown>): ImageMetadata {
+        function parseTags(value: unknown): string[] {
+            if (Array.isArray(value)) {
+                return value.filter((item): item is string => typeof item === 'string');
+            }
+            if (typeof value === 'string') {
+                try {
+                    const parsed = JSON.parse(value);
+                    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string') : [];
+                } catch {
+                    return [];
+                }
+            }
+            return [];
+        }
+
         return {
             id: row.id as string,
             url: row.url as string,
@@ -176,7 +191,7 @@ function createPostgresAdapter(): StorageAdapter {
             store: row.store as string,
             date: row.date as string,
             week: Number(row.week),
-            tags: Array.isArray(row.tags) ? (row.tags as string[]) : [],
+            tags: parseTags(row.tags),
             notes: (row.notes as string) || '',
             uploadedAt:
                 row.uploaded_at instanceof Date
@@ -244,7 +259,7 @@ function createPostgresAdapter(): StorageAdapter {
                     ${image.store},
                     ${image.date},
                     ${image.week},
-                    ${image.tags},
+                    ${JSON.stringify(image.tags)},
                     ${image.notes},
                     ${image.uploadedAt},
                     ${image.sortKey ?? null}
@@ -272,7 +287,7 @@ function createPostgresAdapter(): StorageAdapter {
                     store = ${nextImage.store},
                     date = ${nextImage.date},
                     week = ${nextImage.week},
-                    tags = ${nextImage.tags},
+                    tags = ${JSON.stringify(nextImage.tags)},
                     notes = ${nextImage.notes},
                     uploaded_at = ${nextImage.uploadedAt},
                     sort_key = ${nextImage.sortKey ?? null}
@@ -329,7 +344,7 @@ function createPostgresAdapter(): StorageAdapter {
                         ${image.store},
                         ${image.date},
                         ${image.week},
-                        ${image.tags},
+                        ${JSON.stringify(image.tags)},
                         ${image.notes},
                         ${image.uploadedAt},
                         ${image.sortKey ?? null}
