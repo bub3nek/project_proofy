@@ -1,70 +1,24 @@
 [
     {
-        "id": "1",
-        "url": "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?q=80&w=1000&auto=format&fit=crop",
-        "store": "NEON DREAMS",
+        "id": "7b78d4ce-fc5a-4d5b-baf7-00fef4e7f058",
+        "url": "https://6f5q2dvqsvc4grom.public.blob.vercel-storage.com/proofy/1764809910025-IMG_2088.JPG",
+        "blobPath": "proofy/1764809910025-IMG_2088.JPG",
+        "width": 3024,
+        "height": 4032,
+        "bytes": 4134939,
+        "mimeType": "image/jpeg",
+        "placeholder": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wAARCAArACADASIAAhEBAxEB/8QAGgAAAgMBAQAAAAAAAAAAAAAAAwUABAYBAv/EAC4QAAICAQMDAQcDBQAAAAAAAAECAxEEABIhBRNBUSIxYXGBkaEUMtEkQmPw8f/EABgBAAMBAQAAAAAAAAAAAAAAAAABAwIE/8QAHxEAAgIBBAMAAAAAAAAAAAAAAQIAERIDEyExQVFh/9oADAMBAAIRAxEAPwDLVkwMqiEs5F1Rv8am6WUEugVgeRR05xJCudjvfcEiNC/myQav6j8aCBFFk5quyl2Yc01UVNVXxI0BV7MTMw4EDjdTmgi7axrR80f50OaRmki2+08rVWyqHrd6ZQ9QwVe/1Pshr/aRfII+nvH20OWWJOq4cbsAiRbjuNBdxJJ+HFaQVQCamieuZ6yB2lSdYKaKQSG2+IJA/OuZqvH1bL7Csw2LJavwdpr/AH5fLTJoBOHW1CMvJY+v/dLp7MmKTIVaXHMZUAUSCN353fbWQMlKwJxIMBj48rz/ANxX9m/bYHPBHPqK+miYBhm6pnZUrVElqpHuoenyAHHx1Yw5Z8Tp/fRu2ioSSOabaSOb8kj76ULjNi4kUrg1ICwJWwCfdf0rT1aqvca/OhLw6njnajicAHggD+dVM3N3PtjdzEpJQtVi6JHyseuta2NjseyceLti22bBV8C61B0/DHIxIOP8Y1yb+JltuxMnidzPeLDRn2yMA9WPZ48XXgePGnPXpIsfHSCAI24USOQtccfbVvqtYeD/AEyrFuO07FA4o6y6uzmTcxa7Js+b1ZBu058STHC1E//Z",
+        "store": "PC MADISON",
         "date": "2025-12-01",
-        "week": 49,
-        "tags": [
-            "DISPLAY",
-            "WINDOW",
-            "NIGHT"
-        ],
-        "notes": "Main window display setup for the holiday season. Featuring new cyberpunk collection.",
-        "uploadedAt": "2025-12-01T10:00:00Z"
-    },
-    {
-        "id": "2",
-        "url": "https://images.unsplash.com/photo-1555685812-4b943f3e99a6?q=80&w=1000&auto=format&fit=crop",
-        "store": "CYBER MART",
-        "date": "2025-12-02",
-        "week": 49,
-        "tags": [
-            "AISLE",
-            "STOCK",
-            "CLEAN"
-        ],
-        "notes": "Aisle 4 restocking complete. All shelves aligned and facing forward.",
-        "uploadedAt": "2025-12-02T14:30:00Z"
-    },
-    {
-        "id": "3",
-        "url": "https://images.unsplash.com/photo-1601042879364-f3947d3f9c16?q=80&w=1000&auto=format&fit=crop",
-        "store": "TECH HAVEN",
-        "date": "2025-11-28",
         "week": 48,
         "tags": [
-            "PROMO",
-            "SALE",
-            "SIGNAGE"
+            "PC_MADISON",
+            "WEEK_48",
+            "MONTH_NOV",
+            "FALL"
         ],
-        "notes": "Black Friday promotional signage installation. High visibility achieved.",
-        "uploadedAt": "2025-11-28T09:15:00Z"
-    },
-    {
-        "id": "4",
-        "url": "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=1000&auto=format&fit=crop",
-        "store": "NEON DREAMS",
-        "date": "2025-11-25",
-        "week": 48,
-        "tags": [
-            "ENTRANCE",
-            "LIGHTING"
-        ],
-        "notes": "Entrance lighting check. Replaced flickering neon tube.",
-        "uploadedAt": "2025-11-25T16:45:00Z"
-    },
-    {
-        "id": "5",
-        "url": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1000&auto=format&fit=crop",
-        "store": "DATA CORE",
-        "date": "2025-12-03",
-        "week": 49,
-        "tags": [
-            "SERVER",
-            "MAINTENANCE"
-        ],
-        "notes": "Server room cable management update. Improved airflow.",
-        "uploadedAt": "2025-12-03T11:20:00Z"
+        "notes": "",
+        "uploadedAt": "2025-12-04T00:58:30.816Z",
+        "sortKey": 1764547200000
     }
 ]
