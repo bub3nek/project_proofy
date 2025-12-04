@@ -34,12 +34,13 @@ export async function POST(request: NextRequest) {
             success: true,
             data: created,
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Failed to create image', error);
+        const message = error instanceof Error ? error.message : 'Failed to create image';
         return NextResponse.json<ApiResponse<null>>(
             {
                 success: false,
-                error: error.message || 'Failed to create image',
+                error: message,
             },
             { status: 500 }
         );

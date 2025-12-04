@@ -3,7 +3,6 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { upload } from '@vercel/blob/client';
 import { motion } from 'framer-motion';
 import { Upload, Trash2 } from 'lucide-react';
 
@@ -156,11 +155,27 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
     async function uploadSingle(item: PendingUpload) {
         updateItem(item.id, { status: 'uploading', error: undefined });
 
-        // Client-side upload to Vercel Blob
-        const blob = await upload(item.file.name, item.file, {
-            access: 'public',
-            handleUploadUrl: '/api/upload',
+        const formData = new FormData();
+        formData.append('file', item.file);
+        formData.append('filename', item.file.name);
+
+        const uploadResponse = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
         });
+
+        const uploadJson = (await uploadResponse.json()) as ApiResponse<{
+            url: string;
+            pathname: string;
+            width?: number;
+            height?: number;
+            bytes?: number;
+            mimeType?: string;
+        }>;
+
+        if (!uploadResponse.ok || !uploadJson.success || !uploadJson.data) {
+            throw new Error(uploadJson.error || 'Upload failed');
+        }
 
         const metadataResponse = await fetch('/api/images', {
             method: 'POST',
@@ -168,17 +183,17 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                url: blob.url,
-                blobPath: blob.pathname,
+                url: uploadJson.data.url,
+                blobPath: uploadJson.data.pathname,
                 store: item.store,
                 date: item.date,
                 tags: parseTags(item.tags),
                 notes: item.notes,
-                width: item.width,
-                height: item.height,
+                width: uploadJson.data.width ?? item.width,
+                height: uploadJson.data.height ?? item.height,
                 placeholder: item.placeholder,
-                bytes: item.bytes,
-                mimeType: item.mimeType,
+                bytes: uploadJson.data.bytes ?? item.bytes,
+                mimeType: uploadJson.data.mimeType ?? item.mimeType,
             }),
         });
 

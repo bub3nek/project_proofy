@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import { ImageMetadata, NewImagePayload, UpdateImagePayload } from '@/types';
 import { getWeekNumber } from './utils';
 import { enhanceWithSmartMetadata } from './image-intelligence';
-import { isPostgresAvailable, isPostgresEnabled, sql } from './database';
+import { isPostgresAvailable, sql } from './database';
 
 const DATA_FILE = path.join(process.cwd(), 'data', 'images.json');
 

@@ -21,20 +21,35 @@ export default function AdminLoginPage() {
         setIsSubmitting(true);
         setError(null);
 
-        const response = await signIn('credentials', {
-            email,
-            password,
-            redirect: false,
-        });
+        try {
+            const response = await signIn('credentials', {
+                email,
+                password,
+                redirect: false,
+            });
 
-        setIsSubmitting(false);
+            if (!response) {
+                throw new Error('No response from authentication service.');
+            }
 
-        if (response?.error) {
-            setError('Invalid credentials. Please try again.');
-            return;
+            if (response.error) {
+                if (response.status === 401) {
+                    throw new Error('Invalid credentials. Double-check the email and password.');
+                }
+
+                throw new Error(response.error);
+            }
+
+            router.push('/admin');
+        } catch (authError) {
+            const message =
+                authError instanceof Error
+                    ? authError.message
+                    : 'Unexpected error during login. Please try again.';
+            setError(message);
+        } finally {
+            setIsSubmitting(false);
         }
-
-        router.push('/admin');
     }
 
     return (

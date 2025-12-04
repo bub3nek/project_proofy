@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+'use client';
+
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Calendar } from 'lucide-react';
 import { ImageMetadata } from '@/types';
@@ -12,13 +14,11 @@ interface LightboxProps {
 }
 
 export function Lightbox({ image, onClose }: LightboxProps) {
-    const [isMounted, setIsMounted] = useState(false);
-
     useEffect(() => {
-        setIsMounted(true);
-    }, []);
+        if (typeof document === 'undefined') {
+            return undefined;
+        }
 
-    useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
         };
@@ -36,7 +36,7 @@ export function Lightbox({ image, onClose }: LightboxProps) {
         };
     }, [image, onClose]);
 
-    if (!image || !isMounted) return null;
+    if (!image || typeof document === 'undefined') return null;
 
     return createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
