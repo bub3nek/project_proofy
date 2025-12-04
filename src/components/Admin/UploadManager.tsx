@@ -205,6 +205,7 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
         setIsUploading(true);
         setGlobalError(null);
         const created: ImageMetadata[] = [];
+        let lastError: string | null = null;
 
         for (const item of readyItems) {
             try {
@@ -213,9 +214,11 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
                 setQueue((prev) => prev.filter((entry) => entry.id !== item.id));
             } catch (error) {
                 console.error(error);
+                const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+                lastError = errorMessage;
                 updateItem(item.id, {
                     status: 'error',
-                    error: error instanceof Error ? error.message : 'Upload failed',
+                    error: errorMessage,
                 });
             }
         }
@@ -227,7 +230,11 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
         }
 
         if (!created.length && readyItems.length > 0) {
-            setGlobalError('Uploads failed. Please review the items flagged in red.');
+            setGlobalError(
+                lastError
+                    ? `Upload failed: ${lastError}`
+                    : 'Uploads failed. Please review the items flagged in red.'
+            );
         }
     };
 
