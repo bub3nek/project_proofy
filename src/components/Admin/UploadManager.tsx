@@ -3,6 +3,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { upload } from '@vercel/blob/client';
 import { motion } from 'framer-motion';
 import { Upload, Trash2 } from 'lucide-react';
 
@@ -155,17 +156,24 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
     async function uploadSingle(item: PendingUpload) {
         updateItem(item.id, { status: 'uploading', error: undefined });
 
-        const formData = new FormData();
-        formData.append('file', item.file);
-        formData.append('filename', item.file.name);
-
-        const uploadResponse = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData,
+        const blob = await upload(item.file.name, item.file, {
+            access: 'public',
+            handleUploadUrl: '/api/upload',
         });
 
-        const uploadText = await uploadResponse.text();
-        let uploadJson: ApiResponse<{
+        const optimizeResponse = await fetch('/api/upload/optimize', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                url: blob.url,
+                pathname: blob.pathname,
+                mimeType: item.mimeType,
+            }),
+        });
+
+        const optimizeJson = (await optimizeResponse.json()) as ApiResponse<{
             url: string;
             pathname: string;
             width?: number;
@@ -174,25 +182,8 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
             mimeType?: string;
         }>;
 
-        try {
-            uploadJson = JSON.parse(uploadText) as ApiResponse<{
-                url: string;
-                pathname: string;
-                width?: number;
-                height?: number;
-                bytes?: number;
-                mimeType?: string;
-            }>;
-        } catch (parseError) {
-            throw new Error(
-                `Upload failed: ${
-                    uploadResponse.statusText || (parseError as Error).message || 'Unexpected response.'
-                }`
-            );
-        }
-
-        if (!uploadResponse.ok || !uploadJson.success || !uploadJson.data) {
-            throw new Error(uploadJson.error || 'Upload failed');
+        if (!optimizeResponse.ok || !optimizeJson.success || !optimizeJson.data) {
+            throw new Error(optimizeJson.error || 'Optimization failed');
         }
 
         const metadataResponse = await fetch('/api/images', {
@@ -201,17 +192,17 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                url: uploadJson.data.url,
-                blobPath: uploadJson.data.pathname,
+                url: optimizeJson.data.url,
+                blobPath: optimizeJson.data.pathname,
                 store: item.store,
                 date: item.date,
                 tags: parseTags(item.tags),
                 notes: item.notes,
-                width: uploadJson.data.width ?? item.width,
-                height: uploadJson.data.height ?? item.height,
+                width: optimizeJson.data.width ?? item.width,
+                height: optimizeJson.data.height ?? item.height,
                 placeholder: item.placeholder,
-                bytes: uploadJson.data.bytes ?? item.bytes,
-                mimeType: uploadJson.data.mimeType ?? item.mimeType,
+                bytes: optimizeJson.data.bytes ?? item.bytes,
+                mimeType: optimizeJson.data.mimeType ?? item.mimeType,
             }),
         });
 
