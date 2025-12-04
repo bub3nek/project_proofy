@@ -8,13 +8,15 @@ export async function POST(request: Request) {
         await requireAdminSession();
         const body = (await request.json()) as HandleUploadBody;
 
-        return handleUpload({
+        const response = await handleUpload({
             body,
             request,
             onBeforeGenerateToken: async () => ({
                 allowedContentTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
             }),
         });
+
+        return NextResponse.json(response);
     } catch (error) {
         console.error('Upload token generation failed:', error);
         return NextResponse.json(
