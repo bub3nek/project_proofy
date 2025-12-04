@@ -1,59 +1,38 @@
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
 
-import { ApiResponse } from '@/types';
+import { requireAdminSession } from '@/lib/auth';
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
+    const body = (await request.json()) as HandleUploadBody;
+
     try {
-        const formData = await request.formData();
-        const file = formData.get('file');
-        const accessField = (formData.get('access') || 'public').toString();
-        const isPrivate = accessField === 'private';
-        const folder = (formData.get('folder') as string) || 'proofy';
-        const filename = (formData.get('filename') as string) || (file as File)?.name || 'upload';
+        const response = await handleUpload({
+            body,
+            request,
+            onBeforeGenerateToken: async () => {
+                // Ensure only admins can upload
+                await requireAdminSession();
 
-        if (!file || !(file instanceof File)) {
-            return NextResponse.json<ApiResponse<null>>(
-                { success: false, error: 'Missing file in upload request' },
-                { status: 400 }
-            );
-        }
-
-        const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-
-        if (!blobToken) {
-            console.warn('Upload blocked: missing BLOB_READ_WRITE_TOKEN');
-            return NextResponse.json<ApiResponse<null>>(
-                {
-                    success: false,
-                    error: 'Blob storage token missing. Set BLOB_READ_WRITE_TOKEN in your environment.',
-                },
-                { status: 500 }
-            );
-        }
-
-        const blobPath = `${folder}/${Date.now()}-${filename}`;
-        if (isPrivate) {
-            return NextResponse.json<ApiResponse<null>>(
-                { success: false, error: 'Private access is not supported in this deployment.' },
-                { status: 400 }
-            );
-        }
-
-        type PutOptions = NonNullable<Parameters<typeof put>[2]>;
-        const options: PutOptions = { access: 'public', token: blobToken };
-
-        const blob = await put(blobPath, file, options);
-
-        return NextResponse.json({
-            success: true,
-            data: blob,
+                return {
+                    allowedContentTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+                    tokenPayload: JSON.stringify({
+                        // optional payload
+                    }),
+                };
+            },
+            onUploadCompleted: async ({ blob, tokenPayload }) => {
+                // You can perform post-upload actions here if needed
+                console.log('Upload completed:', blob.url);
+            },
         });
+
+        return NextResponse.json(response);
     } catch (error) {
-        console.error('Upload failed', error);
-        return NextResponse.json<ApiResponse<null>>(
-            { success: false, error: 'Upload failed' },
-            { status: 500 }
+        console.error('Upload token generation failed:', error);
+        return NextResponse.json(
+            { error: (error as Error).message },
+            { status: 400 } // The webhook will retry 5 times waiting for a 200
         );
     }
 }

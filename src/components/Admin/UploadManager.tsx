@@ -3,6 +3,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { upload } from '@vercel/blob/client';
 import { motion } from 'framer-motion';
 import { Upload, Trash2 } from 'lucide-react';
 
@@ -155,21 +156,11 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
     async function uploadSingle(item: PendingUpload) {
         updateItem(item.id, { status: 'uploading', error: undefined });
 
-        const formData = new FormData();
-        formData.append('file', item.file);
-        formData.append('filename', item.file.name);
-
-        const uploadResponse = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData,
+        // Client-side upload to Vercel Blob
+        const blob = await upload(item.file.name, item.file, {
+            access: 'public',
+            handleUploadUrl: '/api/upload',
         });
-        const uploadJson = (await uploadResponse.json()) as ApiResponse<{
-            url: string;
-            pathname: string;
-        }>;
-        if (!uploadJson.success || !uploadJson.data) {
-            throw new Error(uploadJson.error || 'Upload failed');
-        }
 
         const metadataResponse = await fetch('/api/images', {
             method: 'POST',
@@ -177,8 +168,8 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                url: uploadJson.data.url,
-                blobPath: uploadJson.data.pathname,
+                url: blob.url,
+                blobPath: blob.pathname,
                 store: item.store,
                 date: item.date,
                 tags: parseTags(item.tags),
