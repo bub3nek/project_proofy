@@ -9,9 +9,13 @@ if (!process.env.NEXTAUTH_SECRET) {
     process.env.NEXTAUTH_SECRET = resolvedSecret;
 }
 
-// Automatically set NEXTAUTH_URL on Vercel if not explicitly defined
+// Automatically set NEXTAUTH_URL on Vercel Preview deployments
+// We do NOT want to do this for production, as VERCEL_URL might be the deployment URL
+// (e.g. project-git-main.vercel.app) which differs from the actual domain (project.vercel.app)
 if (!process.env.NEXTAUTH_URL && process.env.VERCEL_URL) {
-    process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+    if (process.env.VERCEL_ENV === 'preview') {
+        process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+    }
 }
 
 export function validateAdminCredentials(email: string, password: string) {
