@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Calendar } from 'lucide-react';
 import { ImageMetadata } from '@/types';
 import { formatDate } from '@/lib/utils';
@@ -11,6 +12,12 @@ interface LightboxProps {
 }
 
 export function Lightbox({ image, onClose }: LightboxProps) {
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
@@ -19,29 +26,30 @@ export function Lightbox({ image, onClose }: LightboxProps) {
         if (image) {
             document.addEventListener('keydown', handleEsc);
             document.body.style.overflow = 'hidden';
+            document.body.classList.add('lightbox-open');
         }
 
         return () => {
             document.removeEventListener('keydown', handleEsc);
             document.body.style.overflow = 'unset';
+            document.body.classList.remove('lightbox-open');
         };
     }, [image, onClose]);
 
-    if (!image) return null;
+    if (!image || !isMounted) return null;
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+    return createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
             <button
                 onClick={onClose}
-                className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--neon-cyan)] transition-colors z-50"
+                className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-[101]"
             >
                 <X size={32} />
             </button>
 
-            <div className="relative w-full max-w-6xl h-full flex flex-col md:flex-row gap-6 md:gap-8 overflow-hidden rounded-lg bg-[var(--bg-card)] border-2 border-[var(--neon-cyan)] shadow-[0_0_50px_rgba(0,255,255,0.1)]">
-                {/* Image Section */}
-                <div className="relative flex-1 bg-black flex items-center justify-center overflow-hidden">
-                    <div className="relative w-full h-full min-h-[300px] md:min-h-full">
+            <div className="relative w-full max-w-6xl max-h-[90vh] flex flex-col md:flex-row gap-6 md:gap-8 overflow-hidden rounded-[32px] bg-[var(--bg-card)] border border-[var(--color-border)] shadow-[0_40px_120px_rgba(0,0,0,0.45)]">
+                <div className="relative flex-1 bg-black flex items-center justify-center overflow-hidden rounded-[32px] md:rounded-[32px_0_0_32px]">
+                    <div className="relative w-full h-full min-h-[320px] md:min-h-[400px] max-h-[65vh]">
                         <ResponsiveImage
                             metadata={image}
                             fill
@@ -53,8 +61,7 @@ export function Lightbox({ image, onClose }: LightboxProps) {
                     </div>
                 </div>
 
-                {/* Metadata Section */}
-                <div className="w-full md:w-96 flex flex-col p-6 space-y-6 overflow-y-auto bg-[var(--bg-card)] border-l-0 md:border-l-2 border-[var(--border-color)]">
+                <div className="w-full md:w-[360px] flex flex-col p-6 space-y-6 overflow-y-auto bg-[var(--bg-card)] border-l border-[var(--border-color)]">
                     <div>
                         <h2 className="text-xl font-['Press_Start_2P'] text-[var(--neon-cyan)] mb-4 leading-relaxed">
                             {image.store}
@@ -98,6 +105,7 @@ export function Lightbox({ image, onClose }: LightboxProps) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
