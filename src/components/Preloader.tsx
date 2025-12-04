@@ -10,18 +10,26 @@ export function Preloader() {
     const isFirstLoad = useRef(true);
 
     useEffect(() => {
-        setIsVisible(true);
-        setIsExiting(false);
+        let frame: number | null = null;
+        let exitDelay: ReturnType<typeof setTimeout> | null = null;
+        let hideDelay: ReturnType<typeof setTimeout> | null = null;
 
-        const minDuration = isFirstLoad.current ? 1200 : 800;
-        const exitDelay = setTimeout(() => setIsExiting(true), minDuration);
-        const hideDelay = setTimeout(() => setIsVisible(false), minDuration + 500);
+        frame = window.requestAnimationFrame(() => {
+            setIsVisible(true);
+            setIsExiting(false);
 
-        isFirstLoad.current = false;
+            const minDuration = isFirstLoad.current ? 1200 : 800;
+            exitDelay = setTimeout(() => setIsExiting(true), minDuration);
+            hideDelay = setTimeout(() => setIsVisible(false), minDuration + 500);
+            isFirstLoad.current = false;
+        });
 
         return () => {
-            clearTimeout(exitDelay);
-            clearTimeout(hideDelay);
+            if (frame !== null) {
+                cancelAnimationFrame(frame);
+            }
+            if (exitDelay) clearTimeout(exitDelay);
+            if (hideDelay) clearTimeout(hideDelay);
         };
     }, [pathname]);
 

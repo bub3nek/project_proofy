@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;700&family=Press+Start+2P&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Silkscreen:wght@400;700&family=VT323&display=swap');
 @import "tailwindcss";
 
 
@@ -52,6 +52,9 @@
   /* Grid & Border */
   --grid-color: rgba(0, 255, 255, 0.1);
   --border-color: rgba(0, 255, 255, 0.3);
+
+  --font-heading: 'Silkscreen', 'Press Start 2P', monospace;
+  --font-body: 'Space Grotesk', 'Space Mono', 'VT323', monospace;
 }
 
 body {
@@ -59,7 +62,7 @@ body {
     radial-gradient(circle at 20% 20%, rgba(255, 0, 255, 0.12), transparent 40%),
     var(--bg-dark);
   color: var(--text-primary);
-  font-family: 'Pixelify Sans', 'VT323', monospace;
+  font-family: var(--font-body);
   font-size: 18px;
   line-height: 1.5;
   position: relative;
@@ -71,7 +74,7 @@ h2,
 h3,
 h4,
 .pixel-heading {
-  font-family: 'Press Start 2P', cursive;
+  font-family: var(--font-heading);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -311,7 +314,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Press Start 2P', cursive;
+  font-family: var(--font-heading);
   text-transform: uppercase;
   letter-spacing: 2px;
   line-height: 1.6;
@@ -615,7 +618,7 @@ h3 {
 
 /* Pixel Button Base */
 .pixel-btn {
-  font-family: 'Press Start 2P', cursive;
+  font-family: var(--font-heading);
   font-size: 12px;
   padding: 12px 24px;
   border: 3px solid;
@@ -703,7 +706,7 @@ h3 {
 
 /* Pixel Input */
 .pixel-input {
-  font-family: 'Pixelify Sans', 'Press Start 2P', monospace;
+  font-family: var(--font-body);
   font-size: 1rem;
   background: var(--bg-darker);
   border: 3px solid var(--border-color);
@@ -718,6 +721,164 @@ h3 {
   box-shadow:
     0 0 10px var(--accent-glow),
     inset 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+.immersive-bg {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0, 255, 255, 0.15), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(255, 0, 149, 0.12), transparent 55%),
+    linear-gradient(135deg, #05050a, #090914 45%, #020204);
+  position: relative;
+  isolation: isolate;
+}
+
+.hero-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.hero-grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.4;
+  background: radial-gradient(circle, rgba(0, 224, 255, 0.12), transparent 55%);
+}
+
+.holo-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(140deg, rgba(13, 13, 22, 0.9), rgba(13, 13, 22, 0.5));
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.holo-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.holo-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 255, 255, 0.25);
+}
+
+.holo-card:hover::before {
+  opacity: 1;
+}
+
+.orb {
+  position: absolute;
+  inset: auto;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.3), transparent 60%);
+  filter: blur(0px);
+  animation: orbPulse 6s ease-in-out infinite;
+}
+
+@keyframes orbPulse {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.15);
+    opacity: 0.9;
+  }
+}
+
+.data-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.data-chip {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 1rem 1.2rem;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.35em;
+  background: rgba(8, 8, 14, 0.85);
+}
+
+.neon-marquee {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.neon-marquee::before,
+.neon-marquee::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 2;
+}
+
+.neon-marquee::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-dark), transparent);
+}
+
+.neon-marquee::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-dark), transparent);
+}
+
+.neon-marquee__track {
+  display: flex;
+  gap: 2rem;
+  width: max-content;
+  animation: marqueeMove 18s linear infinite;
+  padding: 0.9rem 0;
+}
+
+@keyframes marqueeMove {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.signal-rail {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.signal-rail span {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.interactive-pill {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
 }
 
 .pixel-input::placeholder {

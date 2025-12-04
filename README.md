@@ -28,11 +28,15 @@ AUTH_SECRET=generate_a_long_random_string
 ADMIN_EMAIL=admin@proofy.local
 ADMIN_PASSWORD=proofy123
 BLOB_READ_WRITE_TOKEN=vercel_blob_rw_token
+PROOFY_USE_POSTGRES=false
+POSTGRES_URL=postgres://user:password@host:5432/db
 ```
 
 - `AUTH_SECRET` – standard NextAuth secret
 - `ADMIN_EMAIL`/`ADMIN_PASSWORD` – credentials for the admin console (can be rotated at any time)
 - `BLOB_READ_WRITE_TOKEN` – required for Vercel Blob uploads/deletes during development; on Vercel, the runtime automatically injects this token.
+- `PROOFY_USE_POSTGRES` – keep `false` for JSON mode or flip to `true` when you have a Postgres connection string available.
+- `POSTGRES_URL` – any valid Postgres URL (Vercel Postgres works great on the Hobby tier). `PROOFY_USE_POSTGRES` must be `true` for it to kick in.
 
 ## Feature Overview
 
@@ -45,6 +49,7 @@ BLOB_READ_WRITE_TOKEN=vercel_blob_rw_token
 - **Storage pipeline** – `/api/upload` pipes files into Vercel Blob, `/api/images` persists metadata, `/api/images/[id]` handles edits/deletions.
 - **Filtering + performance** – shared filter helpers drive gallery filtering, `useDeferredValue` keeps search snappy, and grids animate via `framer-motion`.
 - **Testing & polish** – vitest coverage for filtering combinations, auth helper validation, and the JSON store lifecycle. Animations cover grid items, admin stats, and dropzone interactions.
+- **Postgres-ready mode** – flip `PROOFY_USE_POSTGRES=true` and provide `POSTGRES_URL` to store metadata + store registries in a managed database instead of the JSON files. Tables are auto-created (`proofy_images`, `proofy_stores`).
 
 ## Walkthrough
 
@@ -69,6 +74,8 @@ BLOB_READ_WRITE_TOKEN=vercel_blob_rw_token
 ## Notes
 
 - `data/images.json` is the single source of truth for metadata in development. For production, migrate this logic to your preferred database while keeping the same API contracts.
+- Postgres mode is feature complete: set `PROOFY_USE_POSTGRES=true` plus `POSTGRES_URL` (or any of Vercel’s generated Postgres env vars) and deploy. The app will auto-migrate and future writes will bypass the JSON files.
+- Vercel Blob currently only allows `access: 'public'`. Private uploads are rejected with a helpful error so you never get a partially-configured blob.
 - Remote image hosts are whitelisted in `next.config.ts` (`unsplash` + `*.blob.vercel-storage.com`). Update that list if you add more providers.
 - Bulk uploads can include dozens of files; the queue enforces metadata completion before activating the upload button so you never end up with incomplete records.
 

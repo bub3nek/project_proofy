@@ -1,5 +1,4 @@
 import { FilterOptions } from '@/types';
-import { Card } from '../ui/Card';
 import { Select } from '../ui/Select';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
