@@ -19,6 +19,19 @@ export async function POST(request: Request) {
             );
         }
 
+        const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+
+        if (!blobToken) {
+            console.warn('Upload blocked: missing BLOB_READ_WRITE_TOKEN');
+            return NextResponse.json<ApiResponse<null>>(
+                {
+                    success: false,
+                    error: 'Blob storage token missing. Set BLOB_READ_WRITE_TOKEN in your environment.',
+                },
+                { status: 500 }
+            );
+        }
+
         const blobPath = `${folder}/${Date.now()}-${filename}`;
         if (isPrivate) {
             return NextResponse.json<ApiResponse<null>>(
@@ -28,11 +41,7 @@ export async function POST(request: Request) {
         }
 
         type PutOptions = NonNullable<Parameters<typeof put>[2]>;
-        const options: PutOptions = { access: 'public' };
-
-        if (process.env.BLOB_READ_WRITE_TOKEN) {
-            options.token = process.env.BLOB_READ_WRITE_TOKEN;
-        }
+        const options: PutOptions = { access: 'public', token: blobToken };
 
         const blob = await put(blobPath, file, options);
 

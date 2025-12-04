@@ -34,7 +34,7 @@ POSTGRES_URL=postgres://user:password@host:5432/db
 
 - `AUTH_SECRET` – standard NextAuth secret
 - `ADMIN_EMAIL`/`ADMIN_PASSWORD` – credentials for the admin console (can be rotated at any time)
-- `BLOB_READ_WRITE_TOKEN` – required for Vercel Blob uploads/deletes during development; on Vercel, the runtime automatically injects this token.
+- `BLOB_READ_WRITE_TOKEN` – required for Vercel Blob uploads/deletes during development; on Vercel, the runtime automatically injects this token. Without it, uploads are blocked with a clear error in the admin UI.
 - `PROOFY_USE_POSTGRES` – keep `false` for JSON mode or flip to `true` when you have a Postgres connection string available.
 - `POSTGRES_URL` – any valid Postgres URL (Vercel Postgres works great on the Hobby tier). `PROOFY_USE_POSTGRES` must be `true` for it to kick in.
 
