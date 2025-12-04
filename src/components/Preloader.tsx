@@ -21,7 +21,10 @@ export function Preloader() {
 
             const minDuration = isFirstLoad.current ? 1200 : 800;
             exitDelay = setTimeout(() => setIsExiting(true), minDuration);
-            hideDelay = setTimeout(() => setIsVisible(false), minDuration + 500);
+            hideDelay = setTimeout(() => {
+                setIsVisible(false);
+                window.dispatchEvent(new CustomEvent('proofy-app-ready'));
+            }, minDuration + 500);
             isFirstLoad.current = false;
         });
 
