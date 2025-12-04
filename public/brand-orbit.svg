@@ -1,0 +1,15 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="orbGradient" x1="64" y1="448" x2="448" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFB347" />
+      <stop offset="50%" stop-color="#FF7E29" />
+      <stop offset="100%" stop-color="#FF3366" />
+    </linearGradient>
+    <mask id="orbMask">
+      <rect width="512" height="512" fill="white" />
+      <circle cx="252" cy="252" r="170" fill="black" />
+      <circle cx="420" cy="160" r="160" fill="white" />
+    </mask>
+  </defs>
+  <circle cx="256" cy="256" r="220" fill="url(#orbGradient)" mask="url(#orbMask)" />
+</svg>

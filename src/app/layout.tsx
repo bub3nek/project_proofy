@@ -4,8 +4,15 @@ import { Providers } from "@/components/Providers";
 import { Preloader } from "@/components/Preloader";
 
 export const metadata: Metadata = {
-  title: "Project Proofy",
-  description: "Retro Pixel Cyberpunk Work Gallery",
+  title: "Project Proofy • by Dmytro Usoltsev",
+  description: "Neon proof-of-work gallery curated and engineered by Dmytro Usoltsev.",
+  applicationName: "Project Proofy",
+  authors: [{ name: "Dmytro Usoltsev" }],
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

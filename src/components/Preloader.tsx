@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
@@ -41,11 +42,17 @@ export function Preloader() {
         <div className={`preloader ${isExiting ? 'preloader--exit' : ''}`}>
             <div className="preloader__content">
                 <div className="preloader__orbit">
-                    <span className="preloader__monkey" role="img" aria-label="Jumping monkey">
-                        🐒
-                    </span>
+                    <Image
+                        src="/brand-orbit.svg"
+                        width={96}
+                        height={96}
+                        alt="Project Proofy logo"
+                        className="preloader__logo"
+                        priority
+                    />
                 </div>
-                <p className="preloader__text">Booting gallery AI...</p>
+                <p className="preloader__text">Project Proofy</p>
+                <p className="preloader__subtext">Curated by Dmytro Usoltsev</p>
             </div>
         </div>
     );
