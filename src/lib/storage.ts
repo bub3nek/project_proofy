@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import { ImageMetadata, NewImagePayload, UpdateImagePayload } from '@/types';
 import { getWeekNumber } from './utils';
 import { enhanceWithSmartMetadata } from './image-intelligence';
-import { isPostgresEnabled, sql } from './database';
+import { isPostgresAvailable, isPostgresEnabled, sql } from './database';
 
 const DATA_FILE = path.join(process.cwd(), 'data', 'images.json');
 
@@ -357,15 +357,33 @@ function createPostgresAdapter(): StorageAdapter {
     };
 }
 
+
+
 const adapter: StorageAdapter = (() => {
+    // 1. Explicitly enabled via flag
     if (process.env.PROOFY_USE_POSTGRES === 'true') {
-        if (!isPostgresEnabled()) {
+        if (!isPostgresAvailable()) {
             throw new Error(
                 'PROOFY_USE_POSTGRES is true, but no Postgres URL was found. ' +
                 'Please set POSTGRES_URL (or equivalent) in your environment variables.'
             );
         }
         return createPostgresAdapter();
+    }
+
+    // 2. Auto-detect: if URL is present, use it (safer for production)
+    if (isPostgresAvailable()) {
+        console.log('[Storage] Postgres URL detected, using Postgres adapter.');
+        return createPostgresAdapter();
+    }
+
+    // 3. Fallback to file system (dev only, or if no DB)
+    // In production (Vercel), this will likely fail with EROFS if they try to write.
+    if (process.env.NODE_ENV === 'production') {
+        console.warn(
+            '[Storage] Using FileAdapter in production. Writes will fail (EROFS) in serverless environments. ' +
+            'Set POSTGRES_URL to enable database storage.'
+        );
     }
     return createFileAdapter();
 })();

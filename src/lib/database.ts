@@ -15,4 +15,8 @@ export function isPostgresEnabled() {
     return shouldUsePostgres;
 }
 
+export function isPostgresAvailable() {
+    return Boolean(POSTGRES_URL);
+}
+
 export { sql };
