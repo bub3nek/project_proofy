@@ -34,13 +34,14 @@ export function ImageGrid({ images, onImageClick, isLoading = false }: ImageGrid
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
             {images.map((image, index) => (
                 <motion.div
                     key={image.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03, duration: 0.3 }}
+                    className="h-full"
                 >
                     <ImageCard
                         image={image}

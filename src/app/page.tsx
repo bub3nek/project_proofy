@@ -2,8 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, RefreshCcw } from 'lucide-react';
+import { RefreshCcw } from 'lucide-react';
 
 import { FilterOptions, ImageMetadata } from '@/types';
 import { filterImages, getFilterCollections } from '@/lib/filter-images';
@@ -21,6 +22,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<FilterOptions>({});
   const [selectedImage, setSelectedImage] = useState<ImageMetadata | null>(null);
+  const [isPageReady, setIsPageReady] = useState(false);
 
   useEffect(() => {
     async function fetchImages() {
@@ -74,6 +76,13 @@ export default function Home() {
   }, [sortedImages]);
 
   const latestCapture = sortedImages[0];
+  const featuredImages = sortedImages.slice(0, 4);
+  const heroStats = [
+    { label: 'Captures tracked', value: sortedImages.length.toString() },
+    { label: 'Stores monitored', value: new Set(sortedImages.map((img) => img.store)).size.toString() },
+    { label: 'Smart tags', value: new Set(sortedImages.flatMap((img) => img.tags)).size.toString() },
+  ];
+  const highlightTags = tags.slice(0, 6);
 
   const handleStoreChange = (value: string) => {
     setFilters((prev) => ({
@@ -107,27 +116,110 @@ export default function Home() {
 
   const resetFilters = () => setFilters({});
 
+  useEffect(() => {
+    const handleReady = () => setIsPageReady(true);
+    window.addEventListener('proofy-app-ready', handleReady);
+    const fallback = setTimeout(() => setIsPageReady(true), 1500);
+    return () => {
+      window.removeEventListener('proofy-app-ready', handleReady);
+      clearTimeout(fallback);
+    };
+  }, []);
+
   return (
-    <main className="immersive-bg min-h-screen px-4 py-12 md:py-16">
-      <div className="max-w-6xl mx-auto space-y-12">
-        <section className="grid gap-8 lg:grid-cols-[360px_1fr]">
-          <div className="holo-card p-6 space-y-6">
-            <div className="flex items-center gap-4">
-              <Image src="/brand-orbit.svg" alt="Project Proofy logo" width={72} height={72} priority />
-              <div>
-                <p className="text-xs uppercase tracking-[0.4em] text-[var(--text-muted)]">Project Proofy</p>
-                <h1 className="text-3xl text-glow-cyan">Live Evidence Board</h1>
-                <p className="text-[var(--text-secondary)] text-xs uppercase tracking-[0.3em]">by Dmytro Usoltsev</p>
-              </div>
+    <>
+      <header className="primary-header">
+        <div className="primary-header__inner">
+          <div className="flex items-center gap-3">
+            <Image src="/brand-orbit.svg" alt="Proofy orbit" width={42} height={42} priority />
+            <div>
+              <p className="text-[0.65rem] uppercase tracking-[0.35em] text-[var(--color-text-muted)]">Project Proofy</p>
+              <p className="font-semibold text-[var(--color-text)] text-sm tracking-wide">by Dmytro Usoltsev</p>
             </div>
+          </div>
+          <nav className="nav-links">
+            <Link href="/">Home</Link>
+            <Link href="/gallery">Gallery</Link>
+            <Link href="/admin">Admin</Link>
+            <Link href="/admin/upload">Upload</Link>
+          </nav>
+          <Link href="/gallery" className="pixel-btn pixel-btn-cyan text-[0.6rem]">VIEW ARCHIVE</Link>
+        </div>
+      </header>
+      <main className={`immersive-bg min-h-screen px-4 py-12 md:py-16 page-transition ${isPageReady ? 'ready' : ''}`}>
+        <div className="max-w-6xl mx-auto space-y-10">
+          <section className="hero-layout relative">
+            <div className="floating-lines" />
+            <motion.div
+              className="hero-card"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <p className="text-xs uppercase tracking-[0.35em] text-[var(--text-muted)]">Project Proofy</p>
+              <h1 className="text-4xl md:text-5xl text-[var(--color-text)] leading-tight">
+                A visual heartbeat for every store.
+              </h1>
+              <p className="text-[var(--text-secondary)] text-lg">
+                Uploads, metadata, and references stay perfectly in sync. Browse proof, spot gaps, and brief teams
+                without leaving this page.
+              </p>
+              <div className="flex flex-wrap gap-3 pt-3">
+                <Link href="/gallery" className="pixel-btn pixel-btn-cyan">View gallery</Link>
+                <Link href="/admin" className="pixel-btn pixel-btn-magenta">Admin console</Link>
+              </div>
+              <div className="hero-stats-grid">
+                {heroStats.map((stat) => (
+                  <div key={stat.label} className="stat-pill">
+                    <p className="text-xs uppercase tracking-[0.35em] text-[var(--text-muted)]">{stat.label}</p>
+                    <p className="text-2xl font-semibold text-[var(--color-primary)]">{stat.value}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="signal-rail">
+                {locationHighlights.map((loc) => (
+                  <span key={loc}>{loc}</span>
+                ))}
+              </div>
+            </motion.div>
+            <motion.div
+              className="hero-media space-y-4"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              {latestCapture && (
+                <div className="pixel-card p-4 flex flex-col gap-3">
+                  <div className="relative w-full h-48 rounded-2xl overflow-hidden border border-[var(--color-border)]">
+                    <ResponsiveImage metadata={latestCapture} fill className="object-cover" sizes="(max-width:768px) 100vw, 400px" />
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.35em] text-[var(--text-muted)]">Latest capture</p>
+                    <h3 className="text-xl text-[var(--color-text)]">{latestCapture.store}</h3>
+                    <p className="text-sm text-[var(--text-secondary)]">{formatDate(latestCapture.date)}</p>
+                    <p className="text-sm text-[var(--text-secondary)] line-clamp-2">{latestCapture.notes || 'Fresh metadata synced from the admin deck.'}</p>
+                  </div>
+                </div>
+              )}
+              {featuredImages.length > 0 && (
+                <div className="featured-grid">
+                  {featuredImages.map((img) => (
+                    <div key={img.id} className="featured-grid__item" onClick={() => setSelectedImage(img)}>
+                      <ResponsiveImage metadata={img} fill className="object-cover cursor-pointer" sizes="120px" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </section>
 
-            <p className="text-[var(--text-secondary)] leading-relaxed">
-              The gallery boots directly into filtering mode. Every capture is enriched with metadata, so locations,
-              dates, and smart tags are auto-detected the moment a file leaves the admin deck.
-            </p>
-
-            <div className="space-y-4">
-              <div>
+          <section className="pixel-card space-y-6">
+            <div>
+              <p className="text-xs uppercase tracking-[0.35em] text-[var(--text-muted)]">Filter the proof</p>
+              <h3 className="text-2xl text-[var(--color-text)]">Instant metadata controls</h3>
+            </div>
+            <div className="control-grid">
+              <div className="control-grid__full">
                 <label className="filter-label">Search notes & tags</label>
                 <Input
                   placeholder="Type a keyword..."
@@ -135,7 +227,7 @@ export default function Home() {
                   onChange={(event) => handleSearchChange(event.target.value)}
                 />
               </div>
-              <div>
+              <div className="control-grid__full">
                 <label className="filter-label">Store location</label>
                 <Select
                   value={filters.stores?.[0] || ''}
@@ -146,7 +238,7 @@ export default function Home() {
                   ]}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="control-grid__dates">
                 <div>
                   <label className="filter-label">From</label>
                   <Input
@@ -164,34 +256,31 @@ export default function Home() {
                   />
                 </div>
               </div>
-              <div>
-                <label className="filter-label flex items-center gap-2">
-                  Auto tags from metadata
-                  <span className="text-[10px] tracking-[0.3em] text-[var(--text-muted)]">auto</span>
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {tags.slice(0, 8).map((tag) => {
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.35em] text-[var(--text-muted)] mb-3">
+                Auto tags from metadata
+              </p>
+              <div className="filters-dock">
+                {highlightTags.length ? (
+                  highlightTags.map((tag) => {
                     const isActive = filters.tags?.includes(tag);
                     return (
                       <button
                         key={tag}
                         onClick={() => handleTagToggle(tag)}
-                        className={`px-3 py-1 text-[10px] font-['VT323'] tracking-[0.2em] border transition-all ${
-                          isActive
-                            ? 'bg-[var(--neon-magenta)] text-black border-[var(--neon-magenta)]'
-                            : 'border-[var(--border-color)] text-[var(--text-secondary)] hover:border-[var(--neon-cyan)] hover:text-[var(--neon-cyan)]'
-                        }`}
+                        className={isActive ? 'active' : undefined}
                       >
                         #{tag}
                       </button>
                     );
-                  })}
-                  {!tags.length && <span className="text-[var(--text-muted)] text-xs">No tags detected yet.</span>}
-                </div>
+                  })
+                ) : (
+                  <span className="text-xs text-[var(--text-muted)]">Add uploads to see trending tags.</span>
+                )}
               </div>
             </div>
-
-            <div className="flex flex-wrap gap-3 pt-2">
+            <div className="flex flex-wrap gap-3">
               <Button
                 type="button"
                 variant="magenta"
@@ -202,66 +291,24 @@ export default function Home() {
                 RESET FILTERS
               </Button>
               <Link href="/admin" className="pixel-btn pixel-btn-cyan text-[10px] tracking-[0.35em]">
-                ADMIN PANEL
+                Go to admin
               </Link>
             </div>
+          </section>
 
-            <div className="pt-4">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--text-muted)] mb-2">
-                Active locations (auto)
-              </p>
-              <div className="signal-rail">
-                {locationHighlights.length ? (
-                  locationHighlights.map((loc) => <span key={loc}>{loc}</span>)
-                ) : (
-                  <span>Loading...</span>
-                )}
+          <section className="gallery-preview space-y-6">
+            <div className="gallery-header">
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-[var(--text-muted)]">Instant results</p>
+                <h2 className="text-3xl text-[var(--color-text)]">Gallery preview</h2>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  Showing {filteredImages.length} of {sortedImages.length} captures.
+                </p>
               </div>
+              <Link href="/gallery" className="pixel-btn pixel-btn-cyan text-[0.65rem]">
+                Open archive
+              </Link>
             </div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between flex-wrap gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.35em] text-[var(--text-muted)]">
-                    Sorted newest ➜ latest
-                  </p>
-                  <h2 className="text-3xl text-glow-magenta">Gallery Stream</h2>
-                  <p className="text-sm text-[var(--text-secondary)]">
-                    Showing {filteredImages.length} of {sortedImages.length} captures
-                  </p>
-                </div>
-                <Link href="/gallery" className="pixel-btn pixel-btn-cyan flex items-center gap-2 text-xs">
-                  OPEN ARCHIVE
-                  <ArrowRight size={14} />
-                </Link>
-              </div>
-
-              {latestCapture && (
-                <div className="holo-card p-4 flex flex-col md:flex-row gap-4 items-center">
-                  <div className="relative w-full md:w-48 h-40 border border-[var(--border-color)] overflow-hidden">
-                    <ResponsiveImage
-                      metadata={latestCapture}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 200px"
-                    />
-                  </div>
-                  <div className="space-y-1 text-left w-full">
-                    <p className="text-[10px] uppercase tracking-[0.35em] text-[var(--text-muted)]">
-                      Latest capture
-                    </p>
-                    <h3 className="text-xl text-glow-cyan">{latestCapture.store}</h3>
-                    <p className="text-sm font-['VT323']">{formatDate(latestCapture.date)}</p>
-                    <p className="text-sm text-[var(--text-secondary)] line-clamp-2">
-                      {latestCapture.notes || 'Metadata enriched proof'}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
             <AutoFilterBar
               stores={quickFilters.topStores}
               tags={quickFilters.topTags}
@@ -269,17 +316,30 @@ export default function Home() {
               onTagSelect={(tag) => setFilters((prev) => ({ ...prev, tags: [tag] }))}
               onReset={resetFilters}
             />
-
-            <ImageGrid
-              images={filteredImages}
-              onImageClick={setSelectedImage}
-              isLoading={isLoading}
-            />
+            <div className="gallery-shell">
+              <ImageGrid
+                images={filteredImages}
+                onImageClick={setSelectedImage}
+                isLoading={isLoading}
+              />
+            </div>
+          </section>
+        </div>
+        <Lightbox image={selectedImage} onClose={() => setSelectedImage(null)} />
+      </main>
+      <footer className="site-footer">
+        <div className="site-footer__inner">
+          <p>Built and curated by Dmytro Usoltsev • Project Proofy</p>
+          <p className="text-sm">
+            Seamless uploads, metadata intelligence, and gallery storytelling. Need help? Reach out via the admin desk.
+          </p>
+          <div className="filters-dock">
+            <Link href="/gallery">Gallery</Link>
+            <Link href="/admin/upload">Upload</Link>
+            <Link href="/admin/manage">Manage</Link>
           </div>
-        </section>
-      </div>
-
-      <Lightbox image={selectedImage} onClose={() => setSelectedImage(null)} />
-    </main>
+        </div>
+      </footer>
+    </>
   );
 }

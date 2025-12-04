@@ -14,7 +14,7 @@ export function ImageCard({ image, onClick }: ImageCardProps) {
         <button
             type="button"
             onClick={() => onClick(image)}
-            className="image-card text-left group cursor-pointer"
+            className="image-card text-left group cursor-pointer h-full"
         >
             <div className="relative aspect-[4/3] w-full overflow-hidden">
                 <ResponsiveImage
