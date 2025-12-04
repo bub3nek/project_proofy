@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { RefreshCcw } from 'lucide-react';
 
@@ -14,8 +13,6 @@ import { Button } from '@/components/ui/Button';
 import { ImageGrid } from '@/components/Gallery/ImageGrid';
 import { Lightbox } from '@/components/Gallery/Lightbox';
 import { AutoFilterBar } from '@/components/Gallery/AutoFilterBar';
-import { ResponsiveImage } from '@/components/ResponsiveImage';
-import { formatDate } from '@/lib/utils';
 
 export default function Home() {
   const [images, setImages] = useState<ImageMetadata[]>([]);
@@ -71,17 +68,6 @@ export default function Home() {
     return { topStores, topTags };
   }, [sortedImages]);
 
-  const locationHighlights = useMemo(() => {
-    return Array.from(new Set(sortedImages.map((img) => img.store))).slice(0, 5);
-  }, [sortedImages]);
-
-  const latestCapture = sortedImages[0];
-  const featuredImages = sortedImages.slice(0, 4);
-  const heroStats = [
-    { label: 'Captures tracked', value: sortedImages.length.toString() },
-    { label: 'Stores monitored', value: new Set(sortedImages.map((img) => img.store)).size.toString() },
-    { label: 'Smart tags', value: new Set(sortedImages.flatMap((img) => img.tags)).size.toString() },
-  ];
   const highlightTags = tags.slice(0, 6);
 
   const handleStoreChange = (value: string) => {
@@ -148,71 +134,6 @@ export default function Home() {
       </header>
       <main className={`immersive-bg min-h-screen px-4 py-12 md:py-16 page-transition ${isPageReady ? 'ready' : ''}`}>
         <div className="max-w-6xl mx-auto space-y-10">
-          <section className="hero-layout relative">
-            <div className="floating-lines" />
-            <motion.div
-              className="hero-card"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <p className="text-xs uppercase tracking-[0.35em] text-[var(--text-muted)]">Project Proofy</p>
-              <h1 className="text-4xl md:text-5xl text-[var(--color-text)] leading-tight">
-                A visual heartbeat for every store.
-              </h1>
-              <p className="text-[var(--text-secondary)] text-lg">
-                Uploads, metadata, and references stay perfectly in sync. Browse proof, spot gaps, and brief teams
-                without leaving this page.
-              </p>
-              <div className="flex flex-wrap gap-3 pt-3">
-                <Link href="/gallery" className="pixel-btn pixel-btn-cyan">View gallery</Link>
-                <Link href="/admin" className="pixel-btn pixel-btn-magenta">Admin console</Link>
-              </div>
-              <div className="hero-stats-grid">
-                {heroStats.map((stat) => (
-                  <div key={stat.label} className="stat-pill">
-                    <p className="text-xs uppercase tracking-[0.35em] text-[var(--text-muted)]">{stat.label}</p>
-                    <p className="text-2xl font-semibold text-[var(--color-primary)]">{stat.value}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="signal-rail">
-                {locationHighlights.map((loc) => (
-                  <span key={loc}>{loc}</span>
-                ))}
-              </div>
-            </motion.div>
-            <motion.div
-              className="hero-media space-y-4"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              {latestCapture && (
-                <div className="pixel-card p-4 flex flex-col gap-3">
-                  <div className="relative w-full h-48 rounded-2xl overflow-hidden border border-[var(--color-border)]">
-                    <ResponsiveImage metadata={latestCapture} fill className="object-cover" sizes="(max-width:768px) 100vw, 400px" />
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-[var(--text-muted)]">Latest capture</p>
-                    <h3 className="text-xl text-[var(--color-text)]">{latestCapture.store}</h3>
-                    <p className="text-sm text-[var(--text-secondary)]">{formatDate(latestCapture.date)}</p>
-                    <p className="text-sm text-[var(--text-secondary)] line-clamp-2">{latestCapture.notes || 'Fresh metadata synced from the admin deck.'}</p>
-                  </div>
-                </div>
-              )}
-              {featuredImages.length > 0 && (
-                <div className="featured-grid">
-                  {featuredImages.map((img) => (
-                    <div key={img.id} className="featured-grid__item" onClick={() => setSelectedImage(img)}>
-                      <ResponsiveImage metadata={img} fill className="object-cover cursor-pointer" sizes="120px" />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          </section>
-
           <section className="pixel-card space-y-6">
             <div>
               <p className="text-xs uppercase tracking-[0.35em] text-[var(--text-muted)]">Filter the proof</p>

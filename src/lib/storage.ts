@@ -357,7 +357,18 @@ function createPostgresAdapter(): StorageAdapter {
     };
 }
 
-const adapter: StorageAdapter = isPostgresEnabled() ? createPostgresAdapter() : createFileAdapter();
+const adapter: StorageAdapter = (() => {
+    if (process.env.PROOFY_USE_POSTGRES === 'true') {
+        if (!isPostgresEnabled()) {
+            throw new Error(
+                'PROOFY_USE_POSTGRES is true, but no Postgres URL was found. ' +
+                'Please set POSTGRES_URL (or equivalent) in your environment variables.'
+            );
+        }
+        return createPostgresAdapter();
+    }
+    return createFileAdapter();
+})();
 
 export async function getImages() {
     return adapter.getImages();

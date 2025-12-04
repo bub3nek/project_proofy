@@ -1,28 +1,38 @@
 import { FilterOptions, ImageMetadata } from '@/types';
 
 export function filterImages(images: ImageMetadata[], filters: FilterOptions) {
+    const query = filters.searchQuery?.trim().toLowerCase();
+    const storeFilters = filters.stores?.map((store) => store.toLowerCase());
+    const tagFilters = filters.tags?.map((tag) => tag.toLowerCase());
+    const startTime = filters.dateRange?.start ? new Date(filters.dateRange.start).getTime() : undefined;
+    const endTime = filters.dateRange?.end ? new Date(filters.dateRange.end).getTime() : undefined;
+
     const result = images.filter((img) => {
-        if (filters.searchQuery) {
-            const query = filters.searchQuery.toLowerCase();
+        const imageStore = img.store.toLowerCase();
+        const imageNotes = (img.notes || '').toLowerCase();
+        const imageTags = (img.tags || []).map((tag) => tag.toLowerCase());
+        const imageDate = new Date(img.date).getTime();
+
+        if (query) {
             const matches =
-                img.store.toLowerCase().includes(query) ||
-                img.notes.toLowerCase().includes(query) ||
-                img.tags.some((tag) => tag.toLowerCase().includes(query));
+                imageStore.includes(query) ||
+                imageNotes.includes(query) ||
+                imageTags.some((tag) => tag.includes(query));
 
             if (!matches) {
                 return false;
             }
         }
 
-        if (filters.stores?.length && !filters.stores.includes(img.store)) {
+        if (storeFilters?.length && !storeFilters.includes(imageStore)) {
             return false;
         }
 
-        if (filters.dateRange?.start && img.date < filters.dateRange.start) {
+        if (typeof startTime === 'number' && imageDate < startTime) {
             return false;
         }
 
-        if (filters.dateRange?.end && img.date > filters.dateRange.end) {
+        if (typeof endTime === 'number' && imageDate > endTime) {
             return false;
         }
 
@@ -30,8 +40,8 @@ export function filterImages(images: ImageMetadata[], filters: FilterOptions) {
             return false;
         }
 
-        if (filters.tags?.length) {
-            const hasTag = filters.tags.some((tag) => img.tags.includes(tag));
+        if (tagFilters?.length) {
+            const hasTag = tagFilters.some((tag) => imageTags.includes(tag));
             if (!hasTag) {
                 return false;
             }

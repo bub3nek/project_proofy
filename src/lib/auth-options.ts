@@ -9,6 +9,11 @@ if (!process.env.NEXTAUTH_SECRET) {
     process.env.NEXTAUTH_SECRET = resolvedSecret;
 }
 
+// Automatically set NEXTAUTH_URL on Vercel if not explicitly defined
+if (!process.env.NEXTAUTH_URL && process.env.VERCEL_URL) {
+    process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+}
+
 export function validateAdminCredentials(email: string, password: string) {
     return email === defaultEmail && password === defaultPassword;
 }
