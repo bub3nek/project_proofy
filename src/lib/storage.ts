@@ -143,6 +143,8 @@ function createPostgresAdapter(): StorageAdapter {
 
     async function ensureTable() {
         if (ensured) return;
+
+        // Create table if it doesn't exist
         await sql`
             CREATE TABLE IF NOT EXISTS proofy_images (
                 id UUID PRIMARY KEY,
@@ -166,6 +168,18 @@ function createPostgresAdapter(): StorageAdapter {
                 camera_model TEXT
             );
         `;
+
+        // Add missing columns to existing table (migration)
+        try {
+            await sql`ALTER TABLE proofy_images ADD COLUMN IF NOT EXISTS gps_latitude DOUBLE PRECISION`;
+            await sql`ALTER TABLE proofy_images ADD COLUMN IF NOT EXISTS gps_longitude DOUBLE PRECISION`;
+            await sql`ALTER TABLE proofy_images ADD COLUMN IF NOT EXISTS camera_make TEXT`;
+            await sql`ALTER TABLE proofy_images ADD COLUMN IF NOT EXISTS camera_model TEXT`;
+        } catch (error) {
+            // Columns might already exist, ignore error
+            console.log('[Storage] Column migration check:', error);
+        }
+
         ensured = true;
     }
 

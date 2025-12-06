@@ -61,10 +61,22 @@ export async function extractExifData(buffer: Buffer): Promise<ExifData> {
             };
         }
 
+        console.log('[EXIF] Raw tags found:', {
+            DateTimeOriginal: result.tags?.DateTimeOriginal,
+            DateTime: result.tags?.DateTime,
+            GPSLatitude: result.tags?.GPSLatitude,
+            GPSLongitude: result.tags?.GPSLongitude,
+            Make: result.tags?.Make,
+            Model: result.tags?.Model,
+        });
+
         console.log('[EXIF] Extracted metadata:', {
             hasDate: !!exifData.dateTaken,
+            dateTaken: exifData.dateTaken,
             hasGPS: !!exifData.gps,
+            gps: exifData.gps,
             hasCamera: !!exifData.camera,
+            camera: exifData.camera,
             hasDimensions: !!exifData.dimensions,
         });
 
