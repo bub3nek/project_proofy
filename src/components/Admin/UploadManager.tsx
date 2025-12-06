@@ -35,6 +35,12 @@ interface PendingUpload {
     mimeType: string;
     status: UploadStatus;
     error?: string;
+    optimizationStats?: {
+        originalSize: number;
+        finalSize: number;
+        reduction: string;
+        processingTime: number;
+    };
 }
 
 async function extractImageDetails(file: File) {
@@ -156,64 +162,91 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
     async function uploadSingle(item: PendingUpload) {
         updateItem(item.id, { status: 'uploading', error: undefined });
 
-        const blob = await upload(item.file.name, item.file, {
-            access: 'public',
-            handleUploadUrl: '/api/upload',
-        });
+        try {
+            console.log('[Upload] Starting upload for:', item.file.name);
+            const blob = await upload(item.file.name, item.file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload',
+            });
+            console.log('[Upload] Blob uploaded successfully:', { url: blob.url, pathname: blob.pathname });
 
-        const optimizeResponse = await fetch('/api/upload/optimize', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                url: blob.url,
-                pathname: blob.pathname,
-                mimeType: item.mimeType,
-            }),
-        });
+            console.log('[Upload] Starting optimization...');
+            const optimizeResponse = await fetch('/api/upload/optimize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: blob.url,
+                    pathname: blob.pathname,
+                    mimeType: item.mimeType,
+                }),
+            });
 
-        const optimizeJson = (await optimizeResponse.json()) as ApiResponse<{
-            url: string;
-            pathname: string;
-            width?: number;
-            height?: number;
-            bytes?: number;
-            mimeType?: string;
-        }>;
+            const optimizeJson = (await optimizeResponse.json()) as ApiResponse<{
+                url: string;
+                pathname: string;
+                width?: number;
+                height?: number;
+                bytes?: number;
+                mimeType?: string;
+                optimizationStats?: {
+                    originalSize: number;
+                    finalSize: number;
+                    reduction: string;
+                    processingTime: number;
+                };
+            }>;
 
-        if (!optimizeResponse.ok || !optimizeJson.success || !optimizeJson.data) {
-            throw new Error(optimizeJson.error || 'Optimization failed');
+            if (!optimizeResponse.ok || !optimizeJson.success || !optimizeJson.data) {
+                const errorMsg = optimizeJson.error || 'Optimization failed';
+                console.error('[Upload] Optimization failed:', errorMsg);
+                throw new Error(errorMsg);
+            }
+
+            // Log optimization stats
+            if (optimizeJson.data.optimizationStats) {
+                console.log('[Upload] Optimization stats:', optimizeJson.data.optimizationStats);
+                updateItem(item.id, { optimizationStats: optimizeJson.data.optimizationStats });
+            }
+            console.log('[Upload] Optimization complete');
+
+            console.log('[Upload] Saving metadata...');
+            const metadataResponse = await fetch('/api/images', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: optimizeJson.data.url,
+                    blobPath: optimizeJson.data.pathname,
+                    store: item.store,
+                    date: item.date,
+                    tags: parseTags(item.tags),
+                    notes: item.notes,
+                    width: optimizeJson.data.width ?? item.width,
+                    height: optimizeJson.data.height ?? item.height,
+                    placeholder: item.placeholder,
+                    bytes: optimizeJson.data.bytes ?? item.bytes,
+                    mimeType: optimizeJson.data.mimeType ?? item.mimeType,
+                }),
+            });
+
+            const metadataJson = (await metadataResponse.json()) as ApiResponse<ImageMetadata>;
+            if (!metadataJson.success || !metadataJson.data) {
+                const errorMsg = metadataJson.error || 'Failed to save metadata';
+                console.error('[Upload] Metadata save failed:', errorMsg);
+                throw new Error(errorMsg);
+            }
+
+            console.log('[Upload] Upload complete for:', item.file.name);
+            updateItem(item.id, { status: 'success' });
+            URL.revokeObjectURL(item.preview);
+            return metadataJson.data;
+        } catch (error) {
+            console.error('[Upload] Upload failed for:', item.file.name, error);
+            throw error;
         }
-
-        const metadataResponse = await fetch('/api/images', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                url: optimizeJson.data.url,
-                blobPath: optimizeJson.data.pathname,
-                store: item.store,
-                date: item.date,
-                tags: parseTags(item.tags),
-                notes: item.notes,
-                width: optimizeJson.data.width ?? item.width,
-                height: optimizeJson.data.height ?? item.height,
-                placeholder: item.placeholder,
-                bytes: optimizeJson.data.bytes ?? item.bytes,
-                mimeType: optimizeJson.data.mimeType ?? item.mimeType,
-            }),
-        });
-
-        const metadataJson = (await metadataResponse.json()) as ApiResponse<ImageMetadata>;
-        if (!metadataJson.success || !metadataJson.data) {
-            throw new Error(metadataJson.error || 'Failed to save metadata');
-        }
-
-        updateItem(item.id, { status: 'success' });
-        URL.revokeObjectURL(item.preview);
-        return metadataJson.data;
     }
 
     const handleUploadAll = async () => {
@@ -348,6 +381,17 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
                                                 {item.status.toUpperCase()}
                                             </p>
                                         </div>
+                                        {item.optimizationStats && (
+                                            <div className="px-3 py-2 border border-[var(--neon-cyan)] bg-[var(--neon-cyan)]/5 font-['VT323'] text-sm">
+                                                <p className="text-[var(--neon-cyan)]">OPTIMIZED</p>
+                                                <p className="text-xs">
+                                                    {item.optimizationStats.reduction} smaller
+                                                </p>
+                                                <p className="text-xs text-[var(--text-muted)]">
+                                                    {(item.optimizationStats.finalSize / 1024).toFixed(1)} KB
+                                                </p>
+                                            </div>
+                                        )}
                                         <Button
                                             type="button"
                                             variant="magenta"
