@@ -114,6 +114,8 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
 
                 console.log('[Upload] EXIF data extracted:', {
                     file: file.name,
+                    rawDateTaken: exifData.dateTaken,
+                    autoDate: autoDate,
                     hasDate: !!exifData.dateTaken,
                     hasGPS: !!exifData.gps,
                     hasCamera: !!exifData.camera,
@@ -189,7 +191,12 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
 
         try {
             console.log('[Upload] Starting upload for:', item.file.name);
-            const blob = await upload(item.file.name, item.file, {
+            // Generate unique filename to avoid conflicts
+            const timestamp = Date.now();
+            const randomSuffix = Math.random().toString(36).substring(7);
+            const uniqueFilename = `${timestamp}-${randomSuffix}-${item.file.name}`;
+
+            const blob = await upload(uniqueFilename, item.file, {
                 access: 'public',
                 handleUploadUrl: '/api/upload',
             });
