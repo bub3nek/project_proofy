@@ -47,6 +47,8 @@ function buildImageRecord(payload: NewImagePayload): ImageMetadata {
         tags: normalizeTags(payload.tags || []),
         notes: payload.notes?.trim() || '',
         uploadedAt: new Date().toISOString(),
+        gps: payload.gps,
+        camera: payload.camera,
     };
     return enhanceWithSmartMetadata(base);
 }
@@ -157,7 +159,11 @@ function createPostgresAdapter(): StorageAdapter {
                 tags JSONB NOT NULL DEFAULT '[]'::jsonb,
                 notes TEXT NOT NULL DEFAULT '',
                 uploaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                sort_key BIGINT
+                sort_key BIGINT,
+                gps_latitude DOUBLE PRECISION,
+                gps_longitude DOUBLE PRECISION,
+                camera_make TEXT,
+                camera_model TEXT
             );
         `;
         ensured = true;
@@ -198,6 +204,15 @@ function createPostgresAdapter(): StorageAdapter {
                     ? row.uploaded_at.toISOString()
                     : ((row.uploaded_at as string | null) ?? new Date().toISOString()),
             sortKey: row.sort_key === null || row.sort_key === undefined ? undefined : Number(row.sort_key),
+            gps: (row.gps_latitude !== null && row.gps_latitude !== undefined &&
+                row.gps_longitude !== null && row.gps_longitude !== undefined) ? {
+                latitude: Number(row.gps_latitude),
+                longitude: Number(row.gps_longitude),
+            } : undefined,
+            camera: (row.camera_make || row.camera_model) ? {
+                make: (row.camera_make as string | null) ?? undefined,
+                model: (row.camera_model as string | null) ?? undefined,
+            } : undefined,
         };
     }
 
@@ -245,7 +260,11 @@ function createPostgresAdapter(): StorageAdapter {
                     tags,
                     notes,
                     uploaded_at,
-                    sort_key
+                    sort_key,
+                    gps_latitude,
+                    gps_longitude,
+                    camera_make,
+                    camera_model
                 )
                 VALUES (
                     ${image.id},
@@ -262,7 +281,11 @@ function createPostgresAdapter(): StorageAdapter {
                     ${JSON.stringify(image.tags)},
                     ${image.notes},
                     ${image.uploadedAt},
-                    ${image.sortKey ?? null}
+                    ${image.sortKey ?? null},
+                    ${image.gps?.latitude ?? null},
+                    ${image.gps?.longitude ?? null},
+                    ${image.camera?.make ?? null},
+                    ${image.camera?.model ?? null}
                 )
             `;
             return image;
@@ -290,7 +313,11 @@ function createPostgresAdapter(): StorageAdapter {
                     tags = ${JSON.stringify(nextImage.tags)},
                     notes = ${nextImage.notes},
                     uploaded_at = ${nextImage.uploadedAt},
-                    sort_key = ${nextImage.sortKey ?? null}
+                    sort_key = ${nextImage.sortKey ?? null},
+                    gps_latitude = ${nextImage.gps?.latitude ?? null},
+                    gps_longitude = ${nextImage.gps?.longitude ?? null},
+                    camera_make = ${nextImage.camera?.make ?? null},
+                    camera_model = ${nextImage.camera?.model ?? null}
                 WHERE id = ${id}
             `;
             return nextImage;
@@ -330,7 +357,11 @@ function createPostgresAdapter(): StorageAdapter {
                         tags,
                         notes,
                         uploaded_at,
-                        sort_key
+                        sort_key,
+                        gps_latitude,
+                        gps_longitude,
+                        camera_make,
+                        camera_model
                     )
                     VALUES (
                         ${image.id},
@@ -347,7 +378,11 @@ function createPostgresAdapter(): StorageAdapter {
                         ${JSON.stringify(image.tags)},
                         ${image.notes},
                         ${image.uploadedAt},
-                        ${image.sortKey ?? null}
+                        ${image.sortKey ?? null},
+                        ${image.gps?.latitude ?? null},
+                        ${image.gps?.longitude ?? null},
+                        ${image.camera?.make ?? null},
+                        ${image.camera?.model ?? null}
                     )
                 `;
                 created.push(image);
