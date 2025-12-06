@@ -244,9 +244,11 @@ textarea.pixel-input {
   0% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
+
   100% {
     transform: translateY(0);
   }
@@ -533,10 +535,12 @@ textarea.pixel-input {
 }
 
 @keyframes logo-pulse {
+
   0%,
   100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.08);
   }
@@ -546,9 +550,11 @@ textarea.pixel-input {
   0% {
     opacity: 0.65;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     opacity: 0.65;
   }
@@ -763,6 +769,7 @@ body.lightbox-open .primary-header {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -801,9 +808,9 @@ body.lightbox-open .primary-header {
   .primary-header__inner {
     padding: 0.75rem 1rem;
   }
-  
+
   .nav-links {
-    gap: 0.8rem;
-    font-size: 0.65rem;
+    display: none !important;
+    /* Hide desktop nav on mobile */
   }
 }
