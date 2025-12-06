@@ -13,6 +13,7 @@ import { getWeekNumber } from '@/lib/utils';
 import { UploadZone } from './UploadZone';
 import { MetadataForm } from './MetadataForm';
 import { previewSmartTags } from '@/lib/image-intelligence';
+import { extractExifFromFile } from '@/lib/exif-extractor';
 
 interface UploadManagerProps {
     onImagesCreated?: (images: ImageMetadata[]) => void;
@@ -40,6 +41,14 @@ interface PendingUpload {
         finalSize: number;
         reduction: string;
         processingTime: number;
+    };
+    gps?: {
+        latitude: number;
+        longitude: number;
+    };
+    camera?: {
+        make?: string;
+        model?: string;
     };
 }
 
@@ -96,20 +105,36 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
         const mapped = await Promise.all(
             acceptedFiles.map(async (file) => {
                 const details = await extractImageDetails(file);
+                const exifData = await extractExifFromFile(file);
+
+                // Auto-fill date from EXIF if available
+                const autoDate = exifData.dateTaken
+                    ? exifData.dateTaken.split('T')[0] // Convert ISO to YYYY-MM-DD
+                    : '';
+
+                console.log('[Upload] EXIF data extracted:', {
+                    file: file.name,
+                    hasDate: !!exifData.dateTaken,
+                    hasGPS: !!exifData.gps,
+                    hasCamera: !!exifData.camera,
+                });
+
                 return {
                     id: crypto.randomUUID(),
                     file,
                     preview: details.preview,
                     store: '',
-                    date: '',
+                    date: autoDate,
                     tags: '',
-                    notes: '',
-                    width: details.width,
-                    height: details.height,
+                    notes: exifData.camera ? `${exifData.camera.make || ''} ${exifData.camera.model || ''}`.trim() : '',
+                    width: exifData.dimensions?.width || details.width,
+                    height: exifData.dimensions?.height || details.height,
                     placeholder: details.placeholder,
                     bytes: file.size,
                     mimeType: file.type,
                     status: 'idle' as UploadStatus,
+                    gps: exifData.gps,
+                    camera: exifData.camera,
                 };
             })
         );
@@ -229,6 +254,8 @@ export function UploadManager({ onImagesCreated }: UploadManagerProps) {
                     placeholder: item.placeholder,
                     bytes: optimizeJson.data.bytes ?? item.bytes,
                     mimeType: optimizeJson.data.mimeType ?? item.mimeType,
+                    gps: item.gps,
+                    camera: item.camera,
                 }),
             });
 

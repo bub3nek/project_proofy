@@ -14,6 +14,14 @@ export interface ImageMetadata {
     notes: string;
     uploadedAt: string;
     sortKey?: number;
+    gps?: {
+        latitude: number;
+        longitude: number;
+    };
+    camera?: {
+        make?: string;
+        model?: string;
+    };
 }
 
 export interface FilterOptions {
@@ -51,6 +59,14 @@ export interface NewImagePayload {
     date: string;
     tags?: string[];
     notes?: string;
+    gps?: {
+        latitude: number;
+        longitude: number;
+    };
+    camera?: {
+        make?: string;
+        model?: string;
+    };
 }
 
 export type UpdateImagePayload = Partial<Omit<ImageMetadata, 'id' | 'uploadedAt' | 'week'>> & {
