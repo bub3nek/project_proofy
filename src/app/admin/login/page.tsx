@@ -40,7 +40,8 @@ export default function AdminLoginPage() {
                 throw new Error(response.error);
             }
 
-            router.push('/admin');
+            // Use window.location for a hard redirect to ensure session is established
+            window.location.href = '/admin';
         } catch (authError) {
             const message =
                 authError instanceof Error

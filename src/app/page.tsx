@@ -1,8 +1,7 @@
 "use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { RefreshCcw } from 'lucide-react';
 
 import { FilterOptions, ImageMetadata } from '@/types';
@@ -13,6 +12,7 @@ import { Button } from '@/components/ui/Button';
 import { ImageGrid } from '@/components/Gallery/ImageGrid';
 import { Lightbox } from '@/components/Gallery/Lightbox';
 import { AutoFilterBar } from '@/components/Gallery/AutoFilterBar';
+import { Header } from '@/components/Header';
 
 export default function Home() {
   const [images, setImages] = useState<ImageMetadata[]>([]);
@@ -114,24 +114,7 @@ export default function Home() {
 
   return (
     <>
-      <header className="primary-header">
-        <div className="primary-header__inner">
-          <div className="flex items-center gap-3">
-            <Image src="/brand-orbit.svg" alt="Proofy orbit" width={42} height={42} priority />
-            <div>
-              <p className="text-[0.65rem] uppercase tracking-[0.35em] text-[var(--color-text-muted)]">Project Proofy</p>
-              <p className="font-semibold text-[var(--color-text)] text-sm tracking-wide">by Dmytro Usoltsev</p>
-            </div>
-          </div>
-          <nav className="nav-links">
-            <Link href="/">Home</Link>
-            <Link href="/gallery">Gallery</Link>
-            <Link href="/admin">Admin</Link>
-            <Link href="/admin/upload">Upload</Link>
-          </nav>
-          <Link href="/gallery" className="pixel-btn pixel-btn-cyan text-[0.6rem]">VIEW ARCHIVE</Link>
-        </div>
-      </header>
+      <Header />
       <main className={`immersive-bg min-h-screen px-4 py-12 md:py-16 page-transition ${isPageReady ? 'ready' : ''}`}>
         <div className="max-w-6xl mx-auto space-y-10">
           <section className="pixel-card space-y-6">
