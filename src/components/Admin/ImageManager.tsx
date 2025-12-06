@@ -55,7 +55,7 @@ export function ImageManager({ images, isLoading, onImageDeleted, onImageUpdated
         setEditing(image);
         setFormState({
             store: image.store,
-            date: image.date,
+            date: image.date.split('T')[0], // Convert ISO to YYYY-MM-DD
             tags: image.tags.join(', '),
             notes: image.notes,
         });
